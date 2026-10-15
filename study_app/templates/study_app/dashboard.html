@@ -1,0 +1,478 @@
+<html>
+<head>
+   {% load static %}
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>StudyMate | Student Dashboard</title>
+   <style>
+        :root {
+            --ink: #172033;
+            --muted: #64748b;
+            --line: #dbe4ee;
+            --blue: #2563eb;
+            --navy: #0f1f38;
+            --surface: #ffffff;
+            --background: #eef3f8;
+            --green: #15803d;
+            --max-content-width: 1080px;
+            --gutter: clamp(16px, 4vw, 40px);
+        }
+
+        * { box-sizing: border-box; }
+        html { font-size: 16px; }
+        body { margin: 0; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; background: radial-gradient(circle at top right, #dbeafe 0, transparent 34%), var(--background); -webkit-font-smoothing:antialiased; }
+
+        /* Layout container */
+        .main { padding: clamp(18px, 4vw, 48px) var(--gutter); }
+        .content { max-width: var(--max-content-width); margin: 0 auto; }
+
+        /* Header / hero */
+        .welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            padding: clamp(18px, 4vw, 38px);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 20px;
+            background: linear-gradient(120deg, #10233e, #1d4ed8 68%, #60a5fa);
+            box-shadow: 0 18px 40px rgba(30, 64, 175, 0.12);
+            color: white;
+        }
+        .eyebrow { margin: 0 0 8px; color: #bfdbfe; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(1.6rem, 3.6vw, 2.6rem); line-height: 1.02; }
+        .welcome-copy { max-width: 600px; margin: 8px 0 0; color: rgba(255,255,255,0.9); line-height: 1.6; font-size: clamp(0.92rem, 1.8vw, 1rem); }
+        .logout-button { padding: 10px 14px; border: 1px solid rgba(255,255,255,0.5); border-radius: 9px; background: rgba(255,255,255,0.12); color: white; cursor: pointer; font: inherit; font-size: 0.9rem; font-weight: 700; transition: background 0.18s, transform 0.18s; }
+        .logout-button:hover { transform: translateY(-1px); background: rgba(255,255,255,0.22); }
+
+        .section-heading { margin: 28px 0 12px; color: var(--navy); font-size: clamp(1.05rem, 2.2vw, 1.35rem); }
+        .section-copy { margin: -6px 0 16px; color: var(--muted); font-size: clamp(0.88rem, 1.6vw, 0.95rem); }
+        .overview { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+        .overview-card { min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 5px 16px rgba(15, 31, 56, 0.04); }
+        .overview-label { display: block; color: var(--muted); font-size: 0.8rem; font-weight: 700; }
+        .overview-value { display: block; margin-top: 6px; color: var(--navy); font-size: clamp(1.35rem, 3vw, 1.8rem); font-weight: 800; }
+        .overview-card.progress-card { grid-column: span 1; }
+        .overview-meter { width: 100%; height: 7px; margin-top: 10px; overflow: hidden; border: 0; border-radius: 99px; background: #e8eef5; accent-color: var(--blue); }
+        .overview-meter::-webkit-progress-bar { border-radius: 99px; background: #e8eef5; }
+        .overview-meter::-webkit-progress-value { border-radius: 99px; background: linear-gradient(90deg, var(--blue), #60a5fa); }
+        .overview-meter::-moz-progress-bar { border-radius: 99px; background: linear-gradient(90deg, var(--blue), #60a5fa); }
+
+        .performance-panel {
+            display: grid;
+            grid-template-columns: 1.1fr 1.5fr;
+            gap: 16px;
+            margin-top: 22px;
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            box-shadow: 0 8px 22px rgba(15, 31, 56, 0.05);
+        }
+        .performance-score {
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+            text-align: center;
+        }
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), #60a5fa);
+            color: white;
+            font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+            font-weight: 800;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+        }
+        .score-label {
+            display: block;
+            margin-top: 12px;
+            color: var(--navy);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .performance-details {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .mini-stat {
+            padding: 14px 12px;
+            border: 1px solid #e5edf5;
+            border-radius: 12px;
+            background: white;
+        }
+        .mini-stat span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+        }
+        .mini-stat strong {
+            display: block;
+            margin-top: 8px;
+            color: var(--navy);
+            font-size: clamp(1.1rem, 2vw, 1.6rem);
+        }
+
+        /* Modules: fluid responsive grid */
+        .modules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 2vw, 18px); }
+        .module-card { position: relative; min-width: 0; overflow: hidden; padding: clamp(14px, 2.4vw, 24px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 6px 18px rgba(15, 31, 56, 0.05); transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s; }
+        .module-card::before { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--blue), #60a5fa); content: ""; }
+        .module-card:hover { transform: translateY(-4px); border-color: #bfdbfe; box-shadow: 0 10px 30px rgba(15, 31, 56, 0.08); }
+        .module-top { display: flex; align-items: center; gap: 12px; }
+        .module-identity { display: flex; min-width: 0; align-items: center; gap: 12px; }
+        .module-art { display: block; width: 66px; height: 66px; flex: 0 0 auto; object-fit: contain; border-radius: 12px; background: #f1f6ff; }
+        .module-number { display: grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border-radius: 10px; background: #eff6ff; color: var(--blue); font-size: 0.78rem; font-weight: 800; }
+        .module-card h3 { margin: 0; color: var(--navy); font-size: clamp(1rem, 1.8vw, 1.08rem); }
+        .module-card p { min-height: 48px; margin: 12px 0 16px; color: var(--muted); font-size: clamp(0.86rem, 1.6vw, 0.95rem); line-height: 1.5; }
+        .module-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .module-link { display: inline-block; padding: 8px 12px; border: 1px solid #dbeafe; border-radius: 8px; background: #eff6ff; color: var(--blue); font-size: 0.86rem; font-weight: 700; text-decoration: none; transition: background 0.18s; }
+        .module-link:hover { background: #dbeafe; }
+        .module-link.primary { border-color: var(--blue); background: var(--blue); color: white; }
+        .module-link.primary:hover { background: #1d4ed8; }
+        .next-up { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
+        .next-panel { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 5px 16px rgba(15, 31, 56, 0.04); }
+        .study-insights { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.8fr); gap: 14px; margin-top: 20px; }
+        .study-chart, .goal-panel { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 5px 16px rgba(15, 31, 56, 0.04); }
+        .insight-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+        .insight-heading h2 { margin: 0; color: var(--navy); font-size: 1.05rem; }
+        .insight-heading a { color: var(--blue); font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+        .study-bars { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; gap: 10px; height: 136px; margin-top: 16px; }
+        .study-day { display: grid; height: 100%; grid-template-rows: 1fr auto auto; justify-items: center; gap: 5px; min-width: 0; }
+        .study-day-minutes { color: var(--muted); font-size: 0.68rem; font-weight: 700; white-space: nowrap; }
+        .study-bar-track { display: flex; width: min(100%, 34px); height: 100%; align-items: end; overflow: hidden; border-radius: 8px; background: #eff6ff; }
+        .study-bar-fill { width: 100%; min-height: 0; border-radius: 7px; background: linear-gradient(180deg, #60a5fa, #2563eb); }
+        .study-day.today .study-day-label { color: var(--blue); font-weight: 800; }
+        .study-day-label { color: var(--muted); font-size: 0.72rem; }
+        .goal-copy { margin: 8px 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.5; }
+        .goal-value { display: block; margin-top: 22px; color: var(--navy); font-size: 1.85rem; font-weight: 850; letter-spacing: -0.04em; }
+        .goal-progress { width: 100%; height: 10px; overflow: hidden; border: 0; border-radius: 99px; background: #e8eef5; accent-color: var(--blue); }
+        .goal-progress::-webkit-progress-bar { border-radius: 99px; background: #e8eef5; }
+        .goal-progress::-webkit-progress-value { border-radius: 99px; background: linear-gradient(90deg, var(--blue), #60a5fa); }
+        .goal-progress::-moz-progress-bar { border-radius: 99px; background: linear-gradient(90deg, var(--blue), #60a5fa); }
+        .streak-chip { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 7px 10px; border-radius: 999px; background: #fff7ed; color: #9a3412; font-size: 0.76rem; font-weight: 800; }
+        .streak-rewards { margin-top: 18px; padding-top: 15px; border-top: 1px solid #e8eef5; }
+        .reward-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+        .reward-heading strong { color: var(--navy); font-size: .84rem; }
+        .reward-heading span, .reward-footnote { color: var(--muted); font-size: .7rem; }
+        .badge-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+        .streak-badge { min-width: 0; padding: 9px 5px 8px; border: 1px solid #e5eaf1; border-radius: 10px; background: #f7f9fc; text-align: center; }
+        .streak-badge.earned { border-color: #fde68a; background: linear-gradient(145deg, #fffbeb, #fff7ed); box-shadow: 0 3px 10px #f59e0b12; }
+        .badge-icon, .badge-days, .badge-name, .badge-state { display: block; }
+        .badge-icon { font-size: 1.2rem; filter: grayscale(1); opacity: .55; }
+        .streak-badge.earned .badge-icon { filter: none; opacity: 1; }
+        .badge-days { margin-top: 3px; color: #334155; font-size: .68rem; font-weight: 850; }
+        .badge-name { margin-top: 3px; color: var(--muted); font-size: .62rem; line-height: 1.25; overflow-wrap: anywhere; }
+        .badge-state { margin-top: 4px; color: #94a3b8; font-size: .59rem; font-weight: 750; }
+        .streak-badge.earned .badge-state { color: #a16207; }
+        .next-badge-copy { margin: 10px 0 0; color: #56657b; font-size: .72rem; line-height: 1.45; }
+        .reward-progress { width: 100%; height: 6px; margin-top: 6px; border: 0; border-radius: 99px; background: #e8eef5; accent-color: #f59e0b; }
+        .reward-progress::-webkit-progress-bar { border-radius: 99px; background: #e8eef5; }
+        .reward-progress::-webkit-progress-value { border-radius: 99px; background: linear-gradient(90deg, #fbbf24, #f97316); }
+        .reward-progress::-moz-progress-bar { border-radius: 99px; background: linear-gradient(90deg, #fbbf24, #f97316); }
+        .reward-footnote { display: block; margin-top: 8px; line-height: 1.4; }
+        .next-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .next-heading h3 { margin: 0; color: var(--navy); font-size: 1rem; }
+        .next-heading a { color: var(--blue); font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+        .next-heading a:hover { text-decoration: underline; }
+        .preview-list { display: grid; gap: 9px; padding: 0; margin: 0; list-style: none; }
+        .preview-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 12px; border: 1px solid #edf1f6; border-radius: 9px; background: #fbfdff; }
+        .preview-copy { min-width: 0; }
+        .preview-title { display: block; color: var(--ink); font-size: 0.86rem; font-weight: 700; overflow-wrap: anywhere; }
+        .preview-meta { display: block; margin-top: 4px; color: var(--muted); font-size: 0.76rem; }
+        .preview-date { flex: 0 0 auto; padding: 5px 8px; border-radius: 7px; background: #eff6ff; color: var(--blue); font-size: 0.74rem; font-weight: 800; white-space: nowrap; }
+        .preview-empty { padding: 12px; border-radius: 9px; background: #f8fafc; color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
+
+        /* Footer */
+        .site-footer { margin-top: 28px; border-top: 1px solid var(--line); background: rgba(255,255,255,0.85); }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; max-width: var(--max-content-width); margin: 0 auto; padding: 18px var(--gutter) 28px; }
+        .brand-copy { display: flex; flex-direction: column; gap: 4px; }
+        .brand-copy strong { color: var(--navy); font-size: 1rem; }
+        .brand-copy span { color: var(--muted); font-size: 0.86rem; }
+        .footer-links { display: flex; gap: 14px; flex-wrap: wrap; }
+        .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.86rem; font-weight: 600; transition: color 0.16s; }
+        .footer-links a:hover { color: var(--blue); }
+        .copyright { color: var(--muted); font-size: 0.82rem; margin: 0; }
+        a:focus-visible, button:focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+
+        /* Tablet and smaller: stack header content and tighten spacing */
+        @media (max-width: 900px) {
+            .welcome { flex-direction: column; align-items: flex-start; text-align: left; }
+            .logout-button { align-self: flex-end; }
+            .welcome-copy { max-width: 100%; }
+            .next-up { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .reminder-panel { grid-column: 1 / -1; }
+        }
+
+        /* Small phones: single column flow, center footer */
+        @media (max-width: 520px) {
+            .main { padding: 14px 12px; }
+            .performance-panel { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+            .performance-details { min-width: 0; gap: 8px; }
+            .badge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .mini-stat { min-width: 0; padding: 12px 8px; overflow-wrap: anywhere; }
+            .mini-stat span { font-size: 0.62rem; letter-spacing: 0.04em; }
+            .mini-stat strong { font-size: clamp(0.9rem, 4vw, 1.2rem); overflow-wrap: anywhere; }
+            .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+            .overview-card { padding: 12px; }
+            .next-up { grid-template-columns: 1fr; gap: 10px; margin-top: 18px; }
+            .reminder-panel { grid-column: auto; }
+            .study-insights { grid-template-columns: 1fr; gap: 10px; }
+            .study-chart, .goal-panel { padding: 15px; }
+            .next-panel { padding: 15px; }
+            .modules { grid-template-columns: 1fr; gap: 10px; }
+            .module-card { padding: 12px; border-radius: 10px; }
+            .module-number { width: 30px; height: 30px; font-size: 0.72rem; }
+            .module-top { align-items: center; gap: 8px; }
+            .module-identity { align-items: flex-start; gap: 8px; }
+            .module-art { width: 48px; height: 48px; }
+            .module-card p { min-height: 0; }
+            .module-link { padding: 7px 8px; font-size: 0.78rem; }
+            .footer-content { align-items: flex-start; padding-top: 18px; padding-bottom: 20px; }
+            .footer-links { gap: 10px 16px; }
+        }
+
+        /* Reduced motion / accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main class="main">
+        <div class="content">
+            {% include "study_app/includes/back_button.html" with back_url="/" %}
+            <header class="welcome">
+                <div>
+                    <p class="eyebrow">Student workspace</p>
+                    <h1>StudyMate</h1>
+                    <p class="welcome-copy">Plan your learning, manage study tasks, track your progress, and stay ready for upcoming exams.</p>
+                </div>
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="logout-button" type="submit">Log out</button>
+                </form>
+            </header>
+
+            <section class="overview" aria-label="Study overview">
+                <article class="overview-card">
+                    <span class="overview-label">Subjects</span>
+                    <span class="overview-value">{{ subjects_count }}</span>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Study tasks</span>
+                    <span class="overview-value">{{ total_tasks }}</span>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Completed tasks</span>
+                    <span class="overview-value">{{ completed_tasks }}</span>
+                    <progress class="overview-meter" max="100" value="{{ completion_percent }}" aria-label="Task completion {{ completion_percent }} percent">{{ completion_percent }}%</progress>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Upcoming exams</span>
+                    <span class="overview-value">{{ upcoming_exams_count }}</span>
+                </article>
+                <article class="overview-card">
+                    <span class="overview-label">Study time (7 days)</span>
+                    <span class="overview-value">{{ study_minutes_this_week }} min</span>
+                </article>
+            </section>
+
+            <section class="study-insights" aria-label="Weekly study insights">
+                <article class="study-chart">
+                    <div class="insight-heading">
+                        <h2>Your last 7 days</h2>
+                        <a href="{% url 'learning_hub' %}">Log study time</a>
+                    </div>
+                    <div class="study-bars" role="img" aria-label="Daily study minutes for the last seven days">
+                        {% for day in study_week %}
+                            <div class="study-day{% if day.date == today %} today{% endif %}" aria-label="{{ day.date|date:'l, F j' }}: {{ day.minutes }} minutes">
+                                <span class="study-day-minutes">{{ day.minutes }}m</span>
+                                <span class="study-bar-track" aria-hidden="true"><span class="study-bar-fill" style="height: {{ day.bar_height }}%"></span></span>
+                                <span class="study-day-label">{{ day.label }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </article>
+                <article class="goal-panel">
+                    <div class="insight-heading"><h2>Weekly study goal</h2></div>
+                    <span class="goal-value">{{ study_minutes_this_week }} <small>/ {{ weekly_goal_minutes }} min</small></span>
+                    <p class="goal-copy">A steady routine beats a perfect day. You’re {{ weekly_goal_percent }}% of the way to your weekly target.</p>
+                    <progress class="goal-progress" max="100" value="{{ weekly_goal_percent }}" aria-label="Weekly study goal {{ weekly_goal_percent }} percent">{{ weekly_goal_percent }}%</progress>
+                    <span class="streak-chip" aria-label="{{ study_streak }} day study streak">Study streak: {{ study_streak }} {% if study_streak == 1 %}day{% else %}days{% endif %}</span>
+                    <div class="streak-rewards" aria-labelledby="streak-rewards-heading">
+                        <div class="reward-heading">
+                            <strong id="streak-rewards-heading">Study streak badges</strong>
+                            <span>Best: {{ longest_streak }} {% if longest_streak == 1 %}day{% else %}days{% endif %}</span>
+                        </div>
+                        <div class="badge-grid" role="list" aria-label="Study streak milestones">
+                            {% for badge in streak_badges %}
+                                <div class="streak-badge{% if badge.unlocked %} earned{% endif %}" role="listitem" aria-label="{{ badge.days }} day {{ badge.name }} badge, {% if badge.unlocked %}earned{% else %}locked{% endif %}">
+                                    <span class="badge-icon" aria-hidden="true">{{ badge.icon }}</span>
+                                    <span class="badge-days">{{ badge.days }} days</span>
+                                    <span class="badge-name">{{ badge.name }}</span>
+                                    <span class="badge-state">{% if badge.unlocked %}Earned{% else %}Locked{% endif %}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if next_streak_badge %}
+                            {% if study_streak %}
+                                <p class="next-badge-copy">{{ next_streak_badge.days_remaining }} more study day{{ next_streak_badge.days_remaining|pluralize }} to unlock {{ next_streak_badge.name }}.</p>
+                                <progress class="reward-progress" max="{{ next_streak_badge.days }}" value="{{ study_streak }}" aria-label="Progress toward {{ next_streak_badge.name }} badge">{{ study_streak }} of {{ next_streak_badge.days }}</progress>
+                            {% else %}
+                                <p class="next-badge-copy">Log study time today to start a streak toward {{ next_streak_badge.name }}.</p>
+                            {% endif %}
+                        {% else %}
+                            <p class="next-badge-copy">Every streak badge unlocked. Keep learning at your own pace!</p>
+                        {% endif %}
+                        <span class="reward-footnote">Earned badges stay unlocked when a streak ends. Log study time in the <a href="{% url 'learning_hub' %}">Learning toolkit</a>.</span>
+                    </div>
+                </article>
+            </section>
+
+            <section class="performance-panel" aria-label="Performance summary">
+                <div class="performance-score">
+                    <div class="score-badge">{{ completion_percent }}%</div>
+                    <span class="score-label">Performance score</span>
+                </div>
+                <div class="performance-details">
+                    <div class="mini-stat">
+                        <span>Completed</span>
+                        <strong>{{ completed_tasks }}</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span>Pending</span>
+                        <strong>{{ pending_tasks_count }}</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span>Strength</span>
+                        <strong>{% if completion_percent >= 75 %}Excellent{% elif completion_percent >= 50 %}Good{% else %}Building{% endif %}</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="next-up" aria-label="Study plan previews">
+                <article class="next-panel">
+                    <div class="next-heading">
+                        <h3>Tasks to work on</h3>
+                        <a href="{% url 'task_tracking' %}">All tasks</a>
+                    </div>
+                    {% if pending_tasks %}
+                        <ul class="preview-list">
+                            {% for task in pending_tasks %}
+                                <li class="preview-item">
+                                    <span class="preview-copy">
+                                        <span class="preview-title">{{ task.title }}</span>
+                                        <span class="preview-meta">{{ task.subject.name|default:"No subject assigned" }}</span>
+                                    </span>
+                                    <span class="preview-date">{% if task.due_date %}Due {{ task.due_date|date:"M j" }}{% else %}Pending{% endif %}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="preview-empty">You’re all caught up. Add a task whenever you’re ready.</p>
+                    {% endif %}
+                </article>
+                <article class="next-panel">
+                    <div class="next-heading">
+                        <h3>Upcoming exams</h3>
+                        <a href="{% url 'exam_management' %}">All exams</a>
+                    </div>
+                    {% if upcoming_exams %}
+                        <ul class="preview-list">
+                            {% for exam in upcoming_exams %}
+                                <li class="preview-item">
+                                    <span class="preview-copy">
+                                        <span class="preview-title">{{ exam.title }}</span>
+                                        <span class="preview-meta">{{ exam.subject.name|default:"No subject assigned" }}</span>
+                                    </span>
+                                    <time class="preview-date" datetime="{{ exam.date|date:'Y-m-d' }}">{{ exam.date|date:'M j' }}</time>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="preview-empty">No exams scheduled yet. Add an exam date to plan ahead.</p>
+                    {% endif %}
+                </article>
+                <article class="next-panel reminder-panel">
+                    <div class="next-heading">
+                        <h3>Study reminders</h3>
+                        <a href="{% url 'exam_management' %}#reminders-heading">All reminders</a>
+                    </div>
+                    {% if active_reminders %}
+                        <ul class="preview-list">
+                            {% for reminder in active_reminders %}
+                                <li class="preview-item">
+                                    <span class="preview-copy">
+                                        <span class="preview-title">{{ reminder.title }}</span>
+                                        <span class="preview-meta">{% if reminder.is_overdue %}Overdue{% elif reminder.remind_at <= now %}Due now{% else %}Upcoming{% endif %}{% if reminder.exam %} | {{ reminder.exam.title }}{% endif %}</span>
+                                    </span>
+                                    <time class="preview-date" datetime="{{ reminder.remind_at|date:'c' }}">{{ reminder.remind_at|date:'M j, g:i A' }}</time>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="preview-empty">No open reminders. Add one to keep an important study milestone on your radar.</p>
+                    {% endif %}
+                </article>
+            </section>
+
+            <h2 class="section-heading">Your study modules</h2>
+            <p class="section-copy">Open a module to manage your study plan and check your progress.</p>
+            <section class="modules" aria-label="Student dashboard modules">
+                {% for module in modules %}
+                    <article class="module-card">
+                        <div class="module-top">
+                            <div class="module-identity">
+                                <span class="module-number">{{ forloop.counter|stringformat:"02d" }}</span>
+                                <h3>{{ module.name }}</h3>
+                            </div>
+                            <img class="module-art" src="{% static module.image %}" alt="" aria-hidden="true">
+                        </div>
+                        <p>{{ module.description }}</p>
+                        <div class="module-actions">
+                            <a class="module-link{% if module.slug == 'smart-study-planner' %} primary{% endif %}" href="{% url module.url_name %}">{{ module.action_label }}</a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="brand-copy">
+                <strong>StudyMate</strong>
+                <span>Study smarter, stay organized.</span>
+            </div>
+
+            <nav class="footer-links" aria-label="Footer navigation">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'subject_management' %}">Subjects</a>
+                <a href="{% url 'task_tracking' %}">Tasks</a>
+                <a href="{% url 'exam_management' %}">Exams</a>
+                <a href="{% url 'progress_tracking' %}">Progress</a>
+                <a href="{% url 'learning_hub' %}">Learning toolkit</a>
+                <a href="{% url 'study_calendar' %}">Calendar</a>
+                <a href="{% url 'focus_timer' %}">Focus timer</a>
+                <a href="{% url 'study_planner' %}">Smart planner</a>
+                <a href="{% url 'study_coach' %}">AI Study Coach</a>
+                <a href="{% url 'study_strategies' %}">Study strategies</a>
+            </nav>
+
+            <p class="copyright">&copy; {% now "Y" %} StudyMate</p>
+        </div>
+    </footer>
+</body>
+</html>

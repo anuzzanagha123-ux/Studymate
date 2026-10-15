@@ -1,0 +1,141 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Study Planner | StudyMate</title>
+    <style>
+        :root { --ink: #172033; --muted: #64748b; --line: #dbe4ee; --blue: #2563eb; --navy: #10233e; --green: #15803d; --amber: #b45309; }
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; background: radial-gradient(circle at 88% 4%, #dbeafe 0, transparent 32%), #f1f5f9; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+        main { width: min(1060px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 56px; }
+        .hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: clamp(24px, 5vw, 40px); border-radius: 20px; background: linear-gradient(120deg, #10233e, #1d4ed8 68%, #60a5fa); color: white; box-shadow: 0 16px 36px #1e40af25; }
+        .eyebrow { margin: 0 0 9px; color: #bfdbfe; font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(1.9rem, 5vw, 2.8rem); letter-spacing: -.045em; }
+        .hero p:last-child { max-width: 650px; margin: 10px 0 0; color: #dbeafe; line-height: 1.65; }
+        .hero-date { flex: 0 0 auto; padding: 13px 16px; border: 1px solid #ffffff35; border-radius: 14px; background: #ffffff14; text-align: center; }
+        .hero-date strong, .hero-date span { display: block; }
+        .hero-date strong { font-size: 1.65rem; }
+        .hero-date span { margin-top: 3px; color: #dbeafe; font-size: .78rem; }
+        .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+        .stat, .panel { border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 5px 16px #0f1f3809; }
+        .stat { padding: 16px; }
+        .stat span, .stat strong { display: block; }
+        .stat span { color: var(--muted); font-size: .78rem; font-weight: 700; }
+        .stat strong { margin-top: 7px; color: var(--navy); font-size: 1.4rem; }
+        .panel { margin-top: 16px; padding: clamp(18px, 3vw, 24px); }
+        .panel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+        h2 { margin: 0; color: var(--navy); font-size: 1.14rem; }
+        .muted { color: var(--muted); font-size: .85rem; line-height: 1.55; }
+        .settings-form { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 12px; }
+        .field { display: grid; gap: 6px; }
+        .field label { color: #334155; font-size: .8rem; font-weight: 700; }
+        .field input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: var(--ink); font: inherit; }
+        .field input:focus { outline: 3px solid #bfdbfe; border-color: var(--blue); }
+        .primary-button { min-height: 42px; padding: 10px 14px; border: 0; border-radius: 8px; background: var(--blue); color: white; font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer; }
+        .primary-button:hover { background: #1d4ed8; }
+        .errorlist { grid-column: 1 / -1; margin: 0; padding-left: 20px; color: #b91c1c; font-size: .82rem; }
+        .plan-list { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+        .plan-item { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px; border: 1px solid #e5edf5; border-left: 4px solid var(--blue); border-radius: 11px; background: #fff; }
+        .plan-item.rescheduled { border-left-color: #f59e0b; }
+        .plan-item.exam-soon { border-left-color: #7c3aed; }
+        .time-block { color: var(--blue); font-size: .82rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .task-title { display: block; color: var(--navy); font-weight: 800; overflow-wrap: anywhere; }
+        .task-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; color: var(--muted); font-size: .75rem; }
+        .tag { padding: 3px 7px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-weight: 700; }
+        .tag.overdue { background: #fff7ed; color: #9a3412; }
+        .tag.exam-soon { background: #f3e8ff; color: #6b21a8; }
+        .duration { color: #334155; font-size: .8rem; font-weight: 800; white-space: nowrap; }
+        .empty { padding: 24px; border: 1px dashed #cbd5e1; border-radius: 11px; background: #f8fafc; color: var(--muted); text-align: center; line-height: 1.6; }
+        .empty a, .report-link { color: var(--blue); font-weight: 700; text-decoration: none; }
+        .report-link { display: inline-flex; margin-top: 15px; }
+        .note { margin: 12px 0 0; padding: 11px 13px; border-radius: 9px; background: #eff6ff; color: #334155; font-size: .8rem; line-height: 1.55; }
+        a:focus-visible, button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        @media (max-width: 680px) { .hero { align-items: flex-start; } .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .settings-form { grid-template-columns: 1fr 1fr; } .settings-form .primary-button { grid-column: 1 / -1; } }
+        @media (max-width: 480px) { main { width: calc(100% - 22px); padding-top: 14px; } .hero { flex-direction: column; } .hero-date { align-self: flex-end; } .plan-item { grid-template-columns: 1fr auto; gap: 6px 10px; } .time-block { grid-column: 1 / -1; } .settings-form { grid-template-columns: 1fr; } .settings-form .primary-button { grid-column: auto; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Your day, thoughtfully planned</p>
+                <h1>Smart Study Planner</h1>
+                <p>Today's timetable fits your available study time, brings subjects with exams in the next seven days forward, then ranks deadlines and harder topics.</p>
+            </div>
+            <div class="hero-date"><strong>{{ today|date:"j" }}</strong><span>{{ today|date:"F Y" }}</span></div>
+        </header>
+
+        <section class="stats" aria-label="Today's study plan summary">
+            <article class="stat"><span>Study time available</span><strong>{{ daily_minutes }} min</strong></article>
+            <article class="stat"><span>Already logged today</span><strong>{{ logged_today }} min</strong></article>
+            <article class="stat"><span>Time scheduled</span><strong>{{ planned_minutes }} min</strong></article>
+            <article class="stat"><span>Open tasks</span><strong>{{ pending_count }}</strong></article>
+        </section>
+
+        <section class="panel" aria-labelledby="settings-heading">
+            <div class="panel-heading"><h2 id="settings-heading">Set up your study day</h2></div>
+            <p class="muted">Set your daily availability and preferred start time. The planner leaves out study time you've already logged today.</p>
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+                {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+                <div class="field">
+                    {{ form.daily_minutes.label_tag }}
+                    {{ form.daily_minutes }}
+                    {{ form.daily_minutes.errors }}
+                </div>
+                <div class="field">
+                    {{ form.start_time.label_tag }}
+                    {{ form.start_time }}
+                    {{ form.start_time.errors }}
+                </div>
+                <button class="primary-button" type="submit">Update my plan</button>
+            </form>
+        </section>
+
+        <section class="panel" aria-labelledby="timetable-heading">
+            <div class="panel-heading">
+                <h2 id="timetable-heading">Today's timetable</h2>
+                <span class="muted">Starts {{ start_time|time:"g:i A" }}</span>
+            </div>
+            {% if plan %}
+                <ol class="plan-list">
+                    {% for block in plan %}
+                        <li class="plan-item{% if block.is_rescheduled %} rescheduled{% endif %}{% if block.is_exam_urgent %} exam-soon{% endif %}">
+                            <time class="time-block">{{ block.start|time:"g:i A" }}–{{ block.end|time:"g:i A" }}</time>
+                            <div>
+                                <span class="task-title">{{ block.task.title }}</span>
+                                <span class="task-meta">
+                                    <span class="tag">{{ block.task.subject.name|default:"Independent study" }}</span>
+                                    <span class="tag">{{ block.task.get_priority_display }} priority</span>
+                                    <span class="tag">{{ block.task.get_difficulty_display }} topic</span>
+                                    {% if block.is_rescheduled %}<span class="tag overdue">Missed deadline · rescheduled today</span>
+                                    {% elif block.task.due_date %}<span class="tag">Due {{ block.task.due_date|date:"M j" }}</span>{% endif %}
+                                    {% if block.is_exam_urgent %}<span class="tag exam-soon">{% if block.days_until_exam == 0 %}Exam today{% elif block.days_until_exam == 1 %}Exam tomorrow{% else %}Exam in {{ block.days_until_exam }} days{% endif %}</span>
+                                    {% elif block.upcoming_exam_date %}<span class="tag">Exam {{ block.upcoming_exam_date|date:"M j" }}</span>{% endif %}
+                                    {% if block.is_partial %}<span class="tag">Partial block · continue later</span>{% endif %}
+                                </span>
+                            </div>
+                            <span class="duration">{{ block.minutes }} min</span>
+                        </li>
+                    {% endfor %}
+                </ol>
+                {% if unscheduled_count %}
+                    <p class="note">{{ unscheduled_count }} open task{{ unscheduled_count|pluralize }} did not fit in today's available study time. They remain open and will be considered when the plan is generated again.</p>
+                {% endif %}
+            {% elif logged_today >= daily_minutes and pending_count %}
+                <div class="empty">You've already logged your full study target today. Increase today's available minutes above to schedule more tasks.</div>
+            {% elif pending_count %}
+                <div class="empty">There is no study time left to schedule. Increase your available minutes to build today's timetable.</div>
+            {% else %}
+                <div class="empty">You're all caught up! <a href="{% url 'task_tracking' %}">Add a study task</a> and it will appear in your next plan.</div>
+            {% endif %}
+            <p class="note">Subjects with an exam within seven days are prioritized first (so an exam in three days gets extra focus). Overdue work, approaching task deadlines, priority, and difficulty help order the rest. Missed deadlines stay unchanged.</p>
+            <a class="report-link" href="{% url 'progress_tracking' %}">View daily and weekly study reports →</a>
+        </section>
+    </main>
+</body>
+</html>

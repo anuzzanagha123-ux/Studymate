@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" fill="none">
+  <title>Study checklist with completed tasks and a pencil</title>
+  <ellipse cx="119" cy="166" rx="87" ry="11" fill="#0f172a" opacity=".12"/>
+  <rect x="53" y="24" width="126" height="137" rx="14" fill="#dbeafe"/>
+  <rect x="60" y="30" width="120" height="128" rx="12" fill="#fff"/>
+  <path d="M60 42a12 12 0 0 1 12-12h96a12 12 0 0 1 12 12v18H60V42Z" fill="#2563eb"/>
+  <circle cx="88" cy="39" r="3" fill="#bfdbfe"/>
+  <circle cx="102" cy="39" r="3" fill="#bfdbfe"/>
+  <circle cx="116" cy="39" r="3" fill="#bfdbfe"/>
+  <path d="m76 81 5 5 9-11m-14 34 5 5 9-11m-14 34 5 5 9-11" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M102 82h52m-52 5h41m-41 26h48m-48 5h35m-35 26h43" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+  <path d="m176 89 11-10 34 38-11 10-34-38Z" fill="#fbbf24"/>
+  <path d="m210 117 11 12-11 5-1-17Z" fill="#f4c7a1"/>
+  <path d="m176 89 6-6 34 38-6 6-34-38Z" fill="#fcd34d"/>
+  <path d="M41 96v23m-11-11h22" stroke="#93c5fd" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="196" cy="48" r="8" fill="#f9a8d4"/>
+</svg>

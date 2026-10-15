@@ -1,0 +1,227 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StudyMate | Your study, organized</title>
+    <style>
+        :root {
+            --ink: #172033;
+            --muted: #64748b;
+            --blue: #2563eb;
+            --navy: #10233e;
+            --line: #e2e8f0;
+            --background: #f5f8fc;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; background: radial-gradient(circle at 85% 0, #dbeafe 0, transparent 28%), var(--background); }
+        .page { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
+        .brand { display: flex; align-items: center; gap: 10px; color: var(--navy); font-size: 1.15rem; font-weight: 800; text-decoration: none; }
+        .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 11px; background: var(--blue); color: white; }
+        .brand-mark svg { width: 21px; height: 21px; }
+        .nav-links { display: flex; align-items: center; gap: 10px; }
+        .nav-links a { padding: 9px 13px; border-radius: 8px; color: #334155; font-size: 0.87rem; font-weight: 700; text-decoration: none; }
+        .nav-links form { margin: 0; }
+        .nav-links .nav-logout { padding: 9px 13px; border: 0; border-radius: 8px; background: transparent; color: #334155; font: inherit; font-size: 0.87rem; font-weight: 700; cursor: pointer; }
+        .nav-links .nav-logout:hover { background: #eaf1fb; }
+        .nav-links a:hover { background: #eaf1fb; }
+        .nav-links .nav-cta { background: var(--blue); color: white; }
+        .nav-links .nav-cta:hover { background: #1d4ed8; }
+        .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 36px; min-height: 410px; margin-top: 18px; padding: 48px clamp(26px, 6vw, 64px); overflow: hidden; border-radius: 24px; background: linear-gradient(125deg, #10233e, #1d4ed8 68%, #3b82f6); box-shadow: 0 22px 48px rgba(30, 64, 175, 0.18); color: white; }
+        .eyebrow { margin: 0 0 12px; color: #bfdbfe; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+        h1 { max-width: 560px; margin: 0; font-size: clamp(2.5rem, 6vw, 4.2rem); letter-spacing: -0.055em; line-height: 1.05; }
+        .tagline { max-width: 500px; margin: 18px 0 0; color: rgba(255,255,255,0.84); font-size: 1.05rem; line-height: 1.7; }
+        .cta-row { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 26px; }
+        .button { display: inline-block; padding: 12px 18px; border: 1px solid transparent; border-radius: 9px; font-size: 0.9rem; font-weight: 700; text-decoration: none; transition: transform 0.2s, background 0.2s; }
+        .button:hover { transform: translateY(-2px); }
+        .primary-btn { background: white; color: var(--navy); }
+        .primary-btn:hover { background: #eff6ff; }
+        .secondary-btn { border-color: rgba(255,255,255,0.4); color: white; }
+        .secondary-btn:hover { background: rgba(255,255,255,0.12); }
+        .art { display: grid; place-items: center; }
+        .art svg { display: block; width: min(100%, 370px); height: auto; filter: drop-shadow(0 20px 28px rgba(8, 20, 54, 0.24)); }
+        .section { padding: 54px 0 60px; }
+        .section-heading { max-width: 600px; margin: 0 auto 26px; text-align: center; }
+        .section-heading h2 { margin: 0; color: var(--navy); font-size: clamp(1.6rem, 4vw, 2.1rem); letter-spacing: -0.03em; }
+        .section-heading p { margin: 9px 0 0; color: var(--muted); line-height: 1.6; }
+        .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .feature { padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 5px 16px rgba(15, 31, 56, 0.04); }
+        .feature-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 12px; background: #eff6ff; color: var(--blue); }
+        .feature-icon svg { width: 22px; height: 22px; }
+        .feature h3 { margin: 16px 0 7px; color: var(--navy); font-size: 1rem; }
+        .feature p { margin: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+        .about { display: grid; grid-template-columns: 0.85fr 1.15fr; align-items: center; gap: 30px; padding: 26px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+        .about-illustration { display: grid; min-height: 180px; place-items: center; border-radius: 12px; background: linear-gradient(135deg, #eff6ff, #f0fdf4); }
+        .about-illustration svg { width: 120px; height: 120px; }
+        .about h2 { margin: 0; color: var(--navy); font-size: 1.5rem; }
+        .about p { margin: 10px 0 0; color: var(--muted); line-height: 1.75; }
+        .footer { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-top: 44px; padding: 22px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; }
+        .footer-brand { color: var(--navy); font-weight: 800; }
+        .footer-links { display: flex; gap: 16px; }
+        .footer-links a { color: var(--muted); font-weight: 600; text-decoration: none; }
+        .footer-links a:hover { color: var(--blue); }
+        @media (max-width: 760px) { .hero { grid-template-columns: 1fr; gap: 20px; padding: 38px 28px; } .art svg { width: min(78%, 300px); } .features { grid-template-columns: 1fr; } .about { grid-template-columns: 1fr; } .about-illustration { min-height: 140px; } }
+        @media (max-width: 480px) { .page { width: min(100% - 28px, 1120px); } .topbar { align-items: flex-start; gap: 10px; } .nav-links { gap: 2px; } .nav-links a { padding: 8px; font-size: 0.8rem; } .hero { min-height: auto; margin-top: 8px; padding: 32px 22px; border-radius: 18px; } .tagline { font-size: 0.96rem; } .section { padding: 40px 0; } .footer { align-items: flex-start; flex-direction: column; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main class="page">
+        <nav class="topbar" aria-label="Main navigation">
+            <a class="brand" href="{% url 'home' %}">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 5.5c3.1-.8 5.8-.2 8 1.5v12c-2.2-1.7-4.9-2.3-8-1.5v-12Zm16 0c-3.1-.8-5.8-.2-8 1.5v12c2.2-1.7 4.9-2.3 8-1.5v-12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                StudyMate
+            </a>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'learning_hub' %}">Learning toolkit</a>
+                    <a href="{% url 'study_calendar' %}">Calendar</a>
+                    <a class="nav-cta" href="{% url 'dashboard' %}">Dashboard</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="nav-logout" type="submit">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a class="nav-cta" href="{% url 'register' %}">Create account</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <section class="hero">
+            <div>
+                <p class="eyebrow">A calmer way to study</p>
+                <h1>Make every study session count.</h1>
+                <p class="tagline">Plan your learning, keep track of important tasks, and stay ready for every exam — all in one simple place.</p>
+                <div class="cta-row">
+                    {% if user.is_authenticated %}
+                        <a class="button primary-btn" href="{% url 'dashboard' %}">Open my study workspace</a>
+                        <a class="button secondary-btn" href="{% url 'study_calendar' %}">Open calendar</a>
+                    {% else %}
+                        <a class="button primary-btn" href="{% url 'register' %}">Create account</a>
+                        <a class="button secondary-btn" href="{% url 'login' %}">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="art">
+                <svg viewBox="0 0 380 300" role="img" aria-labelledby="study-art-title">
+                    <title id="study-art-title">Illustration of a student studying at a desk with an open book and lamp</title>
+                    <circle cx="190" cy="145" r="112" fill="#fff" opacity=".12"/>
+                    <circle cx="296" cy="58" r="22" fill="#fbbf24"/>
+                    <path d="M296 45v13m0 7v1" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M68 231h245" stroke="#bfdbfe" stroke-width="8" stroke-linecap="round"/>
+                    <path d="M95 232v33m190-33v33" stroke="#dbeafe" stroke-width="9" stroke-linecap="round"/>
+                    <path d="M135 155c0-29 22-52 50-52s50 23 50 52v44h-100v-44Z" fill="#f8fafc"/>
+                    <path d="M151 118c4-27 43-35 62-10 8 10 8 25 3 36h-65v-26Z" fill="#172554"/>
+                    <circle cx="185" cy="126" r="23" fill="#f5c9a8"/>
+                    <path d="M161 123c1-24 19-34 36-29 10 3 17 10 19 20-16-4-31-2-44 9l-11 8v-8Z" fill="#172554"/>
+                    <path d="M170 131h1m27 0h1" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M179 143c4 3 9 3 13 0" stroke="#c2413b" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M153 161c11-9 22-13 32-13 10 0 22 4 33 13v43h-65v-43Z" fill="#60a5fa"/>
+                    <path d="M163 197c7-9 15-14 25-14s18 5 25 14" stroke="#dbeafe" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M114 225h74l-9-43c-18-9-39-9-56 0l-9 43Z" fill="#fff"/>
+                    <path d="M188 225h74l-9-43c-17-9-38-9-56 0l-9 43Z" fill="#eff6ff"/>
+                    <path d="M188 183v42" stroke="#93c5fd" stroke-width="3"/>
+                    <path d="M128 195h42m-38 10h40m27-10h43m-41 10h39" stroke="#bfdbfe" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M278 158v-47m0 0-30 22h60l-30-22Z" fill="#fbbf24"/>
+                    <path d="M267 158h22" stroke="#fbbf24" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M49 216v-33m0 33c-14-5-19-17-15-27 12 2 19 12 15 27Zm0-12c2-13 11-21 22-21 1 12-7 20-22 21Z" fill="#86efac"/>
+                    <rect x="37" y="216" width="25" height="15" rx="4" fill="#bfdbfe"/>
+                </svg>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="features-heading">
+            <div class="section-heading">
+                <h2 id="features-heading">Everything you need to stay on track</h2>
+                <p>Simple tools to make your study routine easier to manage.</p>
+            </div>
+            <div class="features">
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M5 5h14v15H5zM8 9h8M8 13h5M8 17h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <h3>Organize your subjects</h3>
+                    <p>Keep your courses, notes, and study priorities together.</p>
+                </article>
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6M5 5h5M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <h3>Stay on top of tasks</h3>
+                    <p>Break your study goals into clear tasks and celebrate progress.</p>
+                </article>
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 4v4m8-4v4M4 10h16m-11 4h2m3 0h2m-7 3h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    </span>
+                    <h3>Remember exam dates</h3>
+                    <p>Keep upcoming exams visible so you can prepare with confidence.</p>
+                </article>
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">✦</span>
+                    <h3>Practice with flashcards</h3>
+                    <p>Make subject flashcards, reveal answers, and track your self-test accuracy.</p>
+                </article>
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">◷</span>
+                    <h3>Record focused sessions</h3>
+                    <p>Log study time and keep personal revision notes alongside your subjects.</p>
+                </article>
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">▦</span>
+                    <h3>Plan with a study calendar</h3>
+                    <p>See exam dates, task deadlines, and completed study sessions in a monthly view.</p>
+                </article>
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">◷</span>
+                    <h3>Focus with a study timer</h3>
+                    <p>Break study time into calm focus sessions and short rests, at your own pace.</p>
+                </article>
+                <article class="feature">
+                    <span class="feature-icon" aria-hidden="true">✦</span>
+                    <h3>Find better study strategies</h3>
+                    <p>Try practical ways to recall information, plan revision, and avoid burnout.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="about" aria-labelledby="about-heading">
+            <div class="about-illustration" aria-hidden="true">
+                <svg viewBox="0 0 120 120" fill="none">
+                    <path d="M19 91h82" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M29 88V47c0-3 3-5 6-4l22 8v37H29Zm62 0V47c0-3-3-5-6-4l-22 8v37h28Z" fill="#fff" stroke="#2563eb" stroke-width="3" stroke-linejoin="round"/>
+                    <path d="M40 57h10m-10 8h10m20-8h10m-10 8h10" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M60 51v38" stroke="#1d4ed8" stroke-width="3"/>
+                    <path d="M60 45c-9-9-5-19 1-24 7 7 8 16-1 24Zm1 0c1-12 9-17 17-17 0 9-5 16-17 17Z" fill="#22c55e"/>
+                    <path d="M54 91h13" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div>
+                <h2 id="about-heading">About StudyMate</h2>
+                <p>StudyMate brings your study routine into one friendly workspace. Plan what to learn, keep tasks organized, and feel more prepared as exam day gets closer.</p>
+            </div>
+        </section>
+    </main>
+    <footer class="footer page">
+        <span><span class="footer-brand">StudyMate</span> · Your learning, one step at a time</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+            <a href="{% url 'home' %}">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'learning_hub' %}">Learning toolkit</a>
+                <a href="{% url 'study_calendar' %}">Calendar</a>
+                <a href="{% url 'focus_timer' %}">Focus timer</a>
+                <a href="{% url 'study_strategies' %}">Study strategies</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </nav>
+    </footer>
+</body>
+</html>

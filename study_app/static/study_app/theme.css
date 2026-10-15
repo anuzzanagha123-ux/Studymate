@@ -1,0 +1,102 @@
+/* StudyMate's shared, calm and focused visual language. Loaded after page styles. */
+:root {
+    color-scheme: light;
+    --sm-ink: #17243b;
+    --sm-muted: #65748b;
+    --sm-line: #e1e8f1;
+    --sm-blue: #4f65dc;
+    --sm-navy: #202e55;
+    --sm-surface: #fff;
+    --sm-shadow: 0 12px 32px rgba(31, 48, 83, .075);
+    --sm-radius: 18px;
+}
+
+html { background: #f5f7fc; }
+body {
+    color: var(--sm-ink);
+    background: #f5f7fc !important;
+    font-family: Inter, "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    line-height: 1.58;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { color: var(--sm-ink); letter-spacing: -.035em; line-height: 1.2; }
+p, label, small { color: inherit; }
+a { text-underline-offset: 3px; }
+
+.app-nav-shell {
+    border-color: rgba(224, 231, 241, .9);
+    background: rgba(255,255,255,.94);
+    box-shadow: 0 5px 22px rgba(31, 48, 83, .055);
+}
+.app-brand { color: #202e55; }
+.app-brand-mark { background: linear-gradient(145deg, #5369e8, #8090ff); }
+.app-nav-links a { border-radius: 10px; }
+.app-nav-links a:hover, .app-nav-links a[aria-current="page"] { background: #eef1ff; color: #4658cb; }
+
+/* Shared content surfaces across dashboards, forms, lists and feature pages. */
+.hero, .welcome {
+    border-radius: 24px !important;
+    background: linear-gradient(128deg, #26365f 0%, #4659b8 58%, #6878e6 100%) !important;
+    box-shadow: 0 18px 38px rgba(53, 67, 145, .18) !important;
+    color: #fff;
+}
+.hero h1, .hero h2, .hero h3, .hero p,
+.welcome h1, .welcome h2, .welcome h3, .welcome p { color: #fff; }
+
+.card, .panel, .task-panel, .stat, .overview-card, .module-card,
+.next-panel, .study-chart, .goal-panel, .performance-panel, .mini-stat,
+.feature, .about, .summary-card, .subject-item, .auth-shell > *,
+.login-card, .form-panel, .brand-panel, .data-form, .settings-form,
+.task-filters, .task-item, .event-row, .reminder-item, .exam-list li {
+    border-color: var(--sm-line) !important;
+    border-radius: var(--sm-radius) !important;
+    box-shadow: var(--sm-shadow);
+}
+.card, .panel, .task-panel, .stat, .overview-card, .module-card,
+.next-panel, .study-chart, .goal-panel, .performance-panel, .mini-stat,
+.feature, .about, .summary-card, .subject-item, .login-card,
+.form-panel, .data-form, .settings-form, .task-filters, .task-item,
+.event-row, .reminder-item, .exam-list li {
+    background-color: #fff;
+}
+.card:hover, .module-card:hover, .feature:hover, .subject-item:hover {
+    box-shadow: 0 16px 36px rgba(31, 48, 83, .11);
+}
+
+input, select, textarea {
+    border-color: #dce4ef !important;
+    border-radius: 10px !important;
+    background-color: #fff;
+    color: var(--sm-ink);
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: #8290ee !important;
+    outline: 0;
+    box-shadow: 0 0 0 4px rgba(94, 111, 224, .14) !important;
+}
+button, input[type="submit"], .primary-button {
+    border-radius: 10px;
+    transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+button:hover, input[type="submit"]:hover, .primary-button:hover {
+    filter: brightness(1.035);
+    box-shadow: 0 7px 16px rgba(54, 72, 162, .14);
+}
+button:active, input[type="submit"]:active, .primary-button:active { transform: translateY(1px); }
+:focus-visible { outline: 3px solid rgba(105, 123, 239, .62); outline-offset: 3px; }
+
+.tag, .badge { border-radius: 999px; font-weight: 700; }
+table { border-collapse: separate; border-spacing: 0; }
+th { color: #5c6a80; }
+td, th { border-color: var(--sm-line); }
+hr { border: 0; border-top: 1px solid var(--sm-line); }
+
+@media (max-width: 600px) {
+    .hero, .welcome { border-radius: 19px !important; }
+    h1 { letter-spacing: -.03em; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .01ms !important; }
+}

@@ -1,0 +1,177 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Focus Timer | StudyMate</title>
+    <style>
+        :root { color-scheme: light; --ink: #172033; --muted: #64748b; --blue: #2563eb; --navy: #10233e; }
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; padding: 24px; background: radial-gradient(circle at 82% 12%, #dbeafe 0, transparent 32%), #f4f7fb; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+        main { width: min(900px, 100%); margin: 0 auto; }
+        .back { display: inline-block; margin: 4px 0 18px; color: var(--blue); font-weight: 700; text-decoration: none; }
+        .card { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 32px; padding: clamp(22px, 5vw, 48px); border: 1px solid #dbe4ee; border-radius: 24px; background: #fff; box-shadow: 0 18px 46px #0f1f3814; }
+        .eyebrow { margin: 0 0 8px; color: var(--blue); font-size: .76rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        h1 { margin: 0; color: var(--navy); font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.04em; }
+        .intro { color: var(--muted); line-height: 1.65; }
+        .timer-side { display: grid; justify-items: center; }
+        .timer { position: relative; display: grid; width: min(280px, 68vw); aspect-ratio: 1; place-items: center; }
+        .timer svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+        .track, .progress { fill: none; stroke-width: 9; }
+        .track { stroke: #e8eef7; }
+        .progress { stroke: var(--blue); stroke-linecap: round; stroke-dasharray: 628.3; stroke-dashoffset: 0; transition: stroke-dashoffset .3s ease; }
+        .clock { position: relative; color: var(--navy); font-size: clamp(3rem, 12vw, 4.5rem); font-variant-numeric: tabular-nums; font-weight: 800; letter-spacing: -.05em; }
+        .mode { position: relative; margin-top: -54px; color: var(--muted); font-size: .86rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+        .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 22px; }
+        button, select { min-height: 44px; padding: 10px 14px; border: 1px solid #dbe4ee; border-radius: 10px; background: #fff; color: var(--ink); font: inherit; font-weight: 700; }
+        button { border-color: var(--blue); background: var(--blue); color: #fff; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        button.secondary { border-color: #dbe4ee; background: #f8fafc; color: var(--navy); }
+        .status { min-height: 26px; margin: 14px 0 0; color: var(--muted); text-align: center; line-height: 1.5; }
+        .illustration { display: block; width: min(250px, 70%); margin: 22px auto 0; }
+        .hint { margin-top: 24px; padding: 16px; border-radius: 12px; background: #eff6ff; color: #334155; font-size: .9rem; line-height: 1.6; }
+        a:focus-visible, button:focus-visible, select:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        @media (max-width: 680px) { body { padding: 16px; } .card { grid-template-columns: 1fr; gap: 14px; } .illustration { display: none; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <section class="card" aria-labelledby="timer-title">
+            <div>
+                <p class="eyebrow">A little focus goes a long way</p>
+                <h1 id="timer-title">Focus Timer</h1>
+                <p class="intro">Choose a focus block, settle into one task, and take a short break when the timer ends.</p>
+                <img class="illustration" src="{% static 'study_app/images/study-focus.svg' %}" alt="Student studying at a desk">
+                <p class="hint">Tip: add the time you studied to your <a href="{% url 'learning_hub' %}">learning toolkit</a> to keep your progress up to date.</p>
+            </div>
+            <div class="timer-side">
+                <div class="controls" aria-label="Timer length">
+                    <label for="focus-length">Focus</label>
+                    <select id="focus-length" aria-label="Focus duration">
+                        <option value="25">25 min</option>
+                        <option value="50">50 min</option>
+                        <option value="90">90 min</option>
+                    </select>
+                    <label for="break-length">Break</label>
+                    <select id="break-length" aria-label="Break duration">
+                        <option value="5">5 min</option>
+                        <option value="10">10 min</option>
+                        <option value="15">15 min</option>
+                    </select>
+                </div>
+                <div class="timer" role="timer" aria-label="Time remaining">
+                    <svg viewBox="0 0 220 220" aria-hidden="true">
+                        <circle class="track" cx="110" cy="110" r="100"></circle>
+                        <circle class="progress" id="progress-ring" cx="110" cy="110" r="100"></circle>
+                    </svg>
+                    <span class="clock" id="clock" aria-live="off">25:00</span>
+                    <span class="mode" id="mode">Focus time</span>
+                </div>
+                <div class="controls">
+                    <button type="button" id="start-button">Start focus</button>
+                    <button type="button" class="secondary" id="pause-button">Pause</button>
+                    <button type="button" class="secondary" id="reset-button">Reset</button>
+                </div>
+                <p class="status" id="timer-status" role="status" aria-live="polite">Ready when you are.</p>
+            </div>
+        </section>
+    </main>
+    <script>
+        (() => {
+            const focusLength = document.getElementById('focus-length');
+            const breakLength = document.getElementById('break-length');
+            const clock = document.getElementById('clock');
+            const ring = document.getElementById('progress-ring');
+            const modeLabel = document.getElementById('mode');
+            const status = document.getElementById('timer-status');
+            const startButton = document.getElementById('start-button');
+            const pauseButton = document.getElementById('pause-button');
+            const resetButton = document.getElementById('reset-button');
+            const circumference = 2 * Math.PI * 100;
+            let mode = 'focus';
+            let remainingSeconds = Number(focusLength.value) * 60;
+            let endTime = 0;
+            let intervalId = null;
+
+            function render() {
+                const totalSeconds = Number(mode === 'focus' ? focusLength.value : breakLength.value) * 60;
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+                clock.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                ring.style.strokeDasharray = circumference;
+                ring.style.strokeDashoffset = circumference * (1 - remainingSeconds / totalSeconds);
+                modeLabel.textContent = mode === 'focus' ? 'Focus time' : 'Break time';
+            }
+
+            function stopTimer() {
+                window.clearInterval(intervalId);
+                intervalId = null;
+                endTime = 0;
+            }
+
+            function updateTimer() {
+                remainingSeconds = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+                render();
+                if (remainingSeconds === 0) {
+                    stopTimer();
+                    status.textContent = mode === 'focus'
+                        ? 'Focus session complete. Take a well-earned break.'
+                        : 'Break complete. Ready for another focus session?';
+                    startButton.textContent = mode === 'focus' ? 'Start break' : 'Start focus';
+                }
+            }
+
+            function startTimer() {
+                if (intervalId) return;
+                if (remainingSeconds === 0) {
+                    if (mode === 'focus') {
+                        mode = 'break';
+                    } else {
+                        mode = 'focus';
+                    }
+                    remainingSeconds = Number(mode === 'focus' ? focusLength.value : breakLength.value) * 60;
+                    startButton.textContent = mode === 'focus' ? 'Start focus' : 'Start break';
+                    render();
+                }
+                endTime = Date.now() + remainingSeconds * 1000;
+                status.textContent = mode === 'focus' ? 'You’ve got this. One task at a time.' : 'Enjoy your break.';
+                intervalId = window.setInterval(updateTimer, 250);
+                updateTimer();
+            }
+
+            function resetTimer() {
+                stopTimer();
+                mode = 'focus';
+                remainingSeconds = Number(focusLength.value) * 60;
+                startButton.textContent = 'Start focus';
+                status.textContent = 'Timer reset. Ready when you are.';
+                render();
+            }
+
+            startButton.addEventListener('click', startTimer);
+            pauseButton.addEventListener('click', () => {
+                if (!intervalId) return;
+                remainingSeconds = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+                stopTimer();
+                status.textContent = 'Paused. Resume whenever you are ready.';
+                render();
+            });
+            resetButton.addEventListener('click', resetTimer);
+            focusLength.addEventListener('change', () => {
+                if (mode === 'focus' && !intervalId) resetTimer();
+            });
+            breakLength.addEventListener('change', () => {
+                if (mode === 'break' && !intervalId) {
+                    remainingSeconds = Number(breakLength.value) * 60;
+                    render();
+                }
+            });
+            render();
+        })();
+    </script>
+</body>
+</html>

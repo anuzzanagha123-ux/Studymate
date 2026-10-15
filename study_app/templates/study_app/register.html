@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register | StudyMate</title>
+    <style>
+        :root { font-family: "Segoe UI", Arial, sans-serif; color: #172033; background: #e8eef6; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; min-height: 100svh; padding: clamp(12px, 3vw, 32px); display: flex; flex-direction: column; background: radial-gradient(circle at top left, #dbeafe 0, transparent 35%), #e8eef6; }
+        .auth-shell { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); width: min(100%, 1000px); margin: auto; overflow: hidden; background: #fff; border: 1px solid #d7e0eb; border-radius: 24px; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15); }
+        .brand-panel { display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: clamp(28px, 5vw, 52px); background: #11243f; color: #fff; }
+        .brand { margin: 0; color: #93c5fd; font-size: 1rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+        .brand-copy { max-width: 280px; }
+        .brand-copy h2 { margin: 0 0 16px; font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.05; letter-spacing: -0.03em; }
+        .brand-copy p { margin: 0; color: #c8d5e6; line-height: 1.7; }
+        .brand-note { margin: 0; color: #9fb2c9; font-size: 0.85rem; }
+        .form-panel { display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: clamp(28px, 5vw, 56px) clamp(24px, 5.5vw, 64px); }
+        h1 { margin: 0; color: #10233e; font-size: 2rem; letter-spacing: -0.03em; }
+        .intro { margin: 10px 0 24px; color: #66758a; line-height: 1.6; }
+        form { display: grid; gap: 16px; }
+        .field { display: grid; gap: 7px; color: #334155; font-weight: 600; }
+        .field label { font-size: 0.92rem; }
+        .field input { width: 100%; padding: 13px 14px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fbfdff; color: #172033; font: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
+        .field input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 4px #dbeafe; }
+        .helptext { color: #66758a; font-size: 0.8rem; font-weight: 400; line-height: 1.5; }
+        .helptext ul { margin: 6px 0 0; padding-left: 18px; }
+        .errorlist { margin: 0; padding: 0; list-style: none; color: #b42318; font-size: 0.82rem; font-weight: 400; line-height: 1.5; }
+        .form-errors { margin: 0 0 18px; padding: 12px 14px; border: 1px solid #fecaca; border-radius: 9px; background: #fef2f2; }
+        .field.has-errors input { border-color: #dc2626; }
+        button { margin-top: 8px; padding: 14px 16px; border: 0; border-radius: 9px; background: #2563eb; color: #fff; font: inherit; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+        button:hover { background: #1d4ed8; transform: translateY(-1px); }
+        button:focus-visible, a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        .switch { margin: 28px 0 0; color: #66758a; text-align: center; font-size: 0.92rem; }
+        a { color: #1d4ed8; font-weight: 700; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        @media (max-width: 760px) { body { padding: 16px; } .auth-shell { grid-template-columns: 1fr; width: min(100%, 520px); margin: 0 auto; border-radius: 20px; } .brand-panel { gap: 20px; padding: 24px 28px; } .brand-copy { max-width: 440px; } .brand-copy h2 { font-size: clamp(1.8rem, 7vw, 2.4rem); } .brand-note { display: none; } .form-panel { padding: 28px; } }
+        @media (max-width: 380px) { body { padding: 10px; } .brand-panel { padding: 22px; } .form-panel { padding: 22px 18px; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main class="auth-shell">
+        <section class="brand-panel" aria-label="StudyMate introduction">
+            <p class="brand">StudyMate</p>
+            <div class="brand-copy">
+                <h2>Make study time count.</h2>
+                <p>Build a focused routine, keep tasks visible, and make steady progress every day.</p>
+            </div>
+            <p class="brand-note">A simpler way to stay on track.</p>
+        </section>
+        <section class="form-panel" aria-labelledby="register-heading">
+            {% include "study_app/includes/back_button.html" with back_url="/" %}
+            <h1 id="register-heading">Create your account</h1>
+            <p class="intro">Start organizing your subjects, tasks, and study progress.</p>
+            <form method="post" action="{% url 'register' %}">
+                {% csrf_token %}
+                {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
+                {% if form.non_field_errors %}
+                    <ul class="errorlist form-errors" role="alert">
+                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+                {% for field in form %}
+                    <div class="field{% if field.errors %} has-errors{% endif %}">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}<div class="helptext" id="{{ field.auto_id }}_help">{{ field.help_text|safe }}</div>{% endif %}
+                        {% if field.errors %}
+                            <ul class="errorlist" id="{{ field.auto_id }}_errors" role="alert">
+                                {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit">Create account</button>
+            </form>
+            <p class="switch">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+        </section>
+    </main>
+</body>
+</html>

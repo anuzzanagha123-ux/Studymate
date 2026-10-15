@@ -1,0 +1,132 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Study calendar | StudyMate</title>
+    <style>
+        :root { --ink: #172033; --muted: #64748b; --line: #dbe4ee; --blue: #2563eb; --navy: #10233e; --surface: #fff; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: radial-gradient(circle at top right, #dbeafe 0, transparent 35%), #eef3f8; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+        main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+        .hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: clamp(22px, 4vw, 36px); border-radius: 20px; background: linear-gradient(120deg, #10233e, #1d4ed8 70%, #60a5fa); color: #fff; box-shadow: 0 16px 36px rgba(30,64,175,.16); }
+        .eyebrow { margin: 0 0 8px; color: #bfdbfe; font-size: .74rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.7rem); letter-spacing: -.04em; }
+        .hero p:last-child { max-width: 650px; margin: 10px 0 0; color: #dbeafe; line-height: 1.65; }
+        .hero-art { flex: 0 0 128px; width: 128px; height: 128px; padding: 12px; border: 1px solid #ffffff38; border-radius: 22px; background: #ffffff15; }
+        .panel { margin-top: 18px; padding: clamp(15px, 3vw, 24px); border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: 0 6px 18px rgba(15,31,56,.05); }
+        .month-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .month-nav h2 { margin: 0; color: var(--navy); font-size: clamp(1.25rem, 3vw, 1.7rem); }
+        .nav-actions { display: flex; gap: 8px; }
+        .nav-actions a, .today-link { display: inline-block; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; color: var(--navy); font-size: .84rem; font-weight: 700; text-decoration: none; }
+        .nav-actions a:hover, .today-link:hover { border-color: #93c5fd; background: #eff6ff; }
+        .today-link { margin-top: 14px; color: var(--blue); }
+        .calendar-wrap { overflow-x: auto; margin-top: 16px; }
+        .calendar { width: 100%; min-width: 690px; border-collapse: separate; border-spacing: 5px; table-layout: fixed; }
+        .calendar th { padding: 9px 4px; color: var(--muted); font-size: .78rem; text-align: center; }
+        .calendar td { height: 112px; padding: 8px; vertical-align: top; border: 1px solid #e7edf4; border-radius: 10px; background: #fff; }
+        .calendar td.outside { border-color: transparent; background: #f8fafc; }
+        .calendar td.today { border: 2px solid var(--blue); background: #eff6ff; }
+        .day-number { display: inline-grid; width: 27px; height: 27px; place-items: center; border-radius: 50%; color: var(--navy); font-size: .82rem; font-weight: 800; text-decoration: none; }
+        .today .day-number { background: var(--blue); color: white; }
+        .event-dot { display: block; overflow: hidden; margin-top: 5px; padding: 4px 6px; border-radius: 5px; font-size: .68rem; font-weight: 700; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+        .event-dot.exam { background: #fee2e2; color: #b91c1c; }
+        .event-dot.task { background: #fef3c7; color: #92400e; }
+        .event-dot.session { background: #dcfce7; color: #166534; }
+        .event-dot.reminder { background: #ede9fe; color: #5b21b6; }
+        .more-events { display: block; margin-top: 4px; color: var(--muted); font-size: .68rem; }
+        .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; color: var(--muted); font-size: .8rem; }
+        .legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .legend i { width: 10px; height: 10px; border-radius: 3px; }
+        .legend .exam-key { background: #ef4444; }
+        .legend .task-key { background: #f59e0b; }
+        .legend .session-key { background: #22c55e; }
+        .legend .reminder-key { background: #8b5cf6; }
+        .event-list { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+        .event-row { display: grid; grid-template-columns: 105px 115px 1fr auto; align-items: center; gap: 12px; padding: 13px; border: 1px solid #e8eef5; border-radius: 10px; }
+        .event-date { color: var(--navy); font-weight: 800; }
+        .event-type { width: fit-content; padding: 5px 8px; border-radius: 999px; background: #eff6ff; color: var(--blue); font-size: .72rem; font-weight: 800; }
+        .event-title { font-weight: 700; }
+        .event-subject { color: var(--muted); font-size: .82rem; }
+        .empty { padding: 18px; border: 1px dashed #cbd5e1; border-radius: 10px; color: var(--muted); text-align: center; }
+        a:focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+        @media (max-width: 640px) { .hero-art { flex-basis: 76px; width: 76px; height: 76px; padding: 6px; } .event-row { grid-template-columns: 1fr auto; gap: 7px; } .event-type { grid-column: 2; grid-row: 1; } .event-title { grid-column: 1 / -1; } .event-subject { grid-column: 1 / -1; } }
+        @media (max-width: 420px) { main { width: calc(100% - 22px); } .hero-art { display: none; } .nav-actions a { padding: 8px; font-size: .77rem; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Your schedule in one place</p>
+                <h1>Study calendar</h1>
+                <p>Plan around exam days, keep assignment deadlines visible, and see when you logged your study sessions. Only your own events are shown.</p>
+            </div>
+            <svg class="hero-art" viewBox="0 0 100 100" fill="none" role="img" aria-label="Illustration of a study calendar">
+                <rect x="15" y="22" width="70" height="62" rx="9" fill="white"/>
+                <path d="M15 34a12 12 0 0 1 12-12h46a12 12 0 0 1 12 12v5H15v-5Z" fill="#93c5fd"/>
+                <path d="M33 16v13m34-13v13" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                <path d="M28 52h8m13 0h8m13 0h4M28 66h8m13 0h8" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+                <path d="m64 68 5 5 10-12" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </header>
+
+        <section class="panel" aria-labelledby="month-heading">
+            <div class="month-nav">
+                <h2 id="month-heading">{{ month_label }}</h2>
+                <nav class="nav-actions" aria-label="Calendar month navigation">
+                    {% if can_previous %}<a href="?month={{ previous_month }}" aria-label="Previous month">← Previous</a>{% endif %}
+                    {% if can_next %}<a href="?month={{ next_month }}" aria-label="Next month">Next →</a>{% endif %}
+                </nav>
+            </div>
+            {% if month_value != today|date:"Y-m" %}<a class="today-link" href="?month={{ today|date:'Y-m' }}">Back to this month</a>{% endif %}
+            <div class="calendar-wrap">
+                <table class="calendar" aria-label="Calendar for {{ month_label }}">
+                    <thead><tr><th scope="col">Monday</th><th scope="col">Tuesday</th><th scope="col">Wednesday</th><th scope="col">Thursday</th><th scope="col">Friday</th><th scope="col">Saturday</th><th scope="col">Sunday</th></tr></thead>
+                    <tbody>
+                        {% for week in weeks %}
+                            <tr>
+                                {% for cell in week %}
+                                    <td class="{% if not cell.day %}outside{% elif cell.date == today %}today{% endif %}">
+                                        {% if cell.day %}
+                                            <a class="day-number" href="#day-{{ cell.date|date:'Y-m-d' }}" aria-label="{{ cell.date|date:'l, F j, Y' }}">{{ cell.day }}</a>
+                                            {% for event in cell.events|slice:":2" %}
+                                                <span class="event-dot {% if event.kind == 'Exam' %}exam{% elif event.kind == 'Task deadline' %}task{% elif event.kind == 'Study reminder' %}reminder{% else %}session{% endif %}" title="{{ event.kind }}: {{ event.title }}">{{ event.title }}</span>
+                                            {% endfor %}
+                                            {% if cell.events|length > 2 %}<span class="more-events">+{{ cell.events|length|add:"-2" }} more</span>{% endif %}
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="legend" aria-label="Calendar legend">
+                <span><i class="exam-key"></i>Exams</span>
+                <span><i class="task-key"></i>Task deadlines</span>
+                <span><i class="session-key"></i>Study sessions</span>
+                <span><i class="reminder-key"></i>Reminders</span>
+            </div>
+        </section>
+
+        <section class="panel" id="month-schedule" aria-labelledby="schedule-heading">
+            <div class="month-nav"><h2 id="schedule-heading">{{ month_label }} schedule</h2><span class="event-subject">{{ event_count }} event{{ event_count|pluralize }}</span></div>
+            {% if month_events %}
+                <ul class="event-list">
+                    {% for event in month_events %}
+                        <li class="event-row" id="day-{{ event.date|date:'Y-m-d' }}">
+                            <time class="event-date" datetime="{{ event.date|date:'Y-m-d' }}">{{ event.date|date:"D, M j" }}</time>
+                            <span class="event-type">{{ event.kind }}</span>
+                            <span class="event-title">{{ event.title }}</span>
+                            <span class="event-subject">{{ event.subject|default:"StudyMate" }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty">There are no exams, task deadlines, study sessions, or reminders in this month yet. Add them from your <a href="{% url 'task_tracking' %}">tasks</a>, <a href="{% url 'exam_management' %}">exams</a>, or <a href="{% url 'learning_hub' %}">learning toolkit</a>.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

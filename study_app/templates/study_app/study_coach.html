@@ -1,0 +1,141 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10233e">
+    <title>AI Study Coach | StudyMate</title>
+    <style>
+        :root { --ink:#172033; --muted:#64748b; --line:#dce5ef; --blue:#2563eb; --navy:#10233e; --violet:#6d4aff; --surface:#fff; }
+        * { box-sizing:border-box; }
+        body { margin:0; color:var(--ink); background:#f3f6fb; font-family:"Segoe UI",Arial,sans-serif; }
+        main { width:min(1160px,calc(100% - 32px)); margin:0 auto; padding:25px 0 54px; }
+        .hero { position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:clamp(25px,5vw,48px); border-radius:24px; color:#fff; background:radial-gradient(circle at 83% 5%,#9382ff 0,transparent 28%),linear-gradient(118deg,#101f3e 0%,#263d75 58%,#5241a5 100%); box-shadow:0 18px 45px #243b6830; }
+        .hero:after { content:"✦"; position:absolute; right:11%; top:-54px; color:#ffffff18; font-size:230px; transform:rotate(16deg); }
+        .hero-copy,.hero-badge { position:relative; z-index:1; }
+        .eyebrow { margin:0 0 9px; color:#c7d2fe; font-size:.76rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+        h1 { margin:0; font-size:clamp(2rem,5vw,3.3rem); letter-spacing:-.05em; }
+        .hero p:last-child { max-width:660px; margin:11px 0 0; color:#e0e7ff; line-height:1.7; }
+        .hero-badge { display:grid; width:112px; height:112px; flex:0 0 112px; place-items:center; border:1px solid #ffffff50; border-radius:30px; background:#ffffff1c; box-shadow:inset 0 1px #ffffff30; font-size:3.4rem; }
+        .status-row { display:flex; align-items:center; gap:9px; margin:17px 2px; color:var(--muted); font-size:.86rem; }
+        .status-dot { width:9px; height:9px; border-radius:50%; background:{% if ai_enabled %}#22c55e{% else %}#f59e0b{% endif %}; box-shadow:0 0 0 4px {% if ai_enabled %}#22c55e20{% else %}#f59e0b20{% endif %}; }
+        .coach-grid { display:grid; grid-template-columns:minmax(290px,.86fr) minmax(0,1.14fr); gap:18px; align-items:stretch; }
+        .panel { padding:clamp(19px,3vw,28px); border:1px solid var(--line); border-radius:18px; background:var(--surface); box-shadow:0 8px 24px #1632520b; }
+        h2 { margin:0; color:var(--navy); font-size:1.25rem; letter-spacing:-.02em; }
+        .intro { margin:8px 0 20px; color:var(--muted); font-size:.91rem; line-height:1.6; }
+        .field { margin-top:16px; }
+        label { display:block; margin-bottom:7px; color:#29364c; font-size:.85rem; font-weight:750; }
+        select,textarea { width:100%; padding:12px 13px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; color:var(--ink); font:inherit; font-size:.92rem; }
+        textarea { min-height:104px; resize:vertical; line-height:1.55; }
+        select:focus,textarea:focus { outline:3px solid #93c5fd66; border-color:#60a5fa; }
+        .field-help { margin:6px 0 0; color:#718096; font-size:.77rem; line-height:1.5; }
+        .errors { margin:6px 0 0; color:#b42318; font-size:.82rem; }
+        .primary { width:100%; margin-top:19px; padding:13px 16px; border:0; border-radius:10px; color:white; background:linear-gradient(110deg,#315ad9,#7047db); box-shadow:0 8px 16px #5b4bdd30; font:700 .95rem "Segoe UI",Arial,sans-serif; cursor:pointer; }
+        .primary:hover { filter:brightness(1.06); transform:translateY(-1px); }
+        .privacy { display:flex; gap:10px; margin-top:15px; padding:12px; border:1px solid #dbeafe; border-radius:10px; background:#f5f9ff; color:#53647d; font-size:.76rem; line-height:1.55; }
+        .privacy strong { color:#344968; }
+        .answer-panel { display:flex; min-height:495px; flex-direction:column; }
+        .answer-header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+        .tag { padding:6px 9px; border-radius:999px; background:#f0edff; color:#5d43c0; font-size:.72rem; font-weight:800; }
+        .answer-copy { flex:1; margin-top:18px; padding:20px; border:1px solid #e5e9f3; border-radius:14px; background:linear-gradient(150deg,#fbfcff,#f6f7ff); color:#26364f; font-size:.94rem; line-height:1.8; white-space:pre-wrap; }
+        .answer-copy.empty { display:grid; place-items:center; text-align:center; color:#7b879a; }
+        .sparkle { display:block; margin-bottom:12px; color:#725ce2; font-size:2.2rem; }
+        .answer-error { margin-top:14px; padding:10px 12px; border-radius:9px; background:#fff7ed; color:#9a3412; font-size:.81rem; line-height:1.5; }
+        .ideas { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:18px; }
+        .idea { padding:15px 16px; border:1px solid var(--line); border-radius:14px; background:#ffffff; }
+        .idea-icon { font-size:1.2rem; }
+        .idea strong { display:block; margin:8px 0 4px; color:var(--navy); font-size:.85rem; }
+        .idea p { margin:0; color:var(--muted); font-size:.78rem; line-height:1.5; }
+        button:focus-visible,a:focus-visible { outline:3px solid #60a5fa; outline-offset:3px; }
+        @media(max-width:760px) { .coach-grid { grid-template-columns:1fr; } .answer-panel { min-height:360px; } }
+        @media(max-width:520px) { main { width:calc(100% - 22px); padding-top:16px; } .hero { padding:26px 21px; border-radius:18px; } .hero-badge { width:70px; height:70px; flex-basis:70px; border-radius:20px; font-size:2.1rem; } .ideas { grid-template-columns:1fr; } .answer-header { align-items:flex-start; flex-direction:column; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">A little help, right on time</p>
+                <h1>Your Study Coach</h1>
+                <p>Get unstuck, make a realistic revision plan, or turn your own notes into a practice quiz.</p>
+            </div>
+            <div class="hero-badge" aria-hidden="true">✧</div>
+        </header>
+
+        <div class="status-row"><span class="status-dot" aria-hidden="true"></span>{% if ai_enabled %}AI coaching is connected{% else %}Local study suggestions are active · connect an OpenAI key for personalized AI replies{% endif %}</div>
+
+        <div class="coach-grid">
+            <section class="panel" aria-labelledby="ask-heading">
+                <h2 id="ask-heading">What are we working on?</h2>
+                <p class="intro">Choose a tool and add your subject. Your coach will shape a useful next step around your schedule.</p>
+                <form method="post" id="coach-form">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
+                    <div class="field">
+                        <label for="{{ form.mode.id_for_label }}">I’d like to…</label>
+                        {{ form.mode }}
+                        {% for error in form.mode.errors %}<p class="errors">{{ error }}</p>{% endfor %}
+                    </div>
+                    <div class="field">
+                        <label for="{{ form.subject.id_for_label }}">Subject</label>
+                        {{ form.subject }}
+                        <p class="field-help">Pick one to include its notes and study material. A quiz needs a subject.</p>
+                        {% for error in form.subject.errors %}<p class="errors">{{ error }}</p>{% endfor %}
+                    </div>
+                    <div class="field" id="prompt-field">
+                        <label for="{{ form.prompt.id_for_label }}">Question or topic <span id="prompt-optional">(optional)</span></label>
+                        {{ form.prompt }}
+                        {% for error in form.prompt.errors %}<p class="errors">{{ error }}</p>{% endfor %}
+                    </div>
+                    <button class="primary" type="submit">Get study help <span aria-hidden="true">→</span></button>
+                </form>
+                <aside class="privacy">
+                    <span aria-hidden="true">🔒</span>
+                    <span><strong>Your study data stays yours.</strong> With AI enabled, StudyMate sends your question and relevant subject, task, exam, note, or flashcard details to OpenAI for this reply. Your account name and login details are never sent.</span>
+                </aside>
+            </section>
+
+            <section class="panel answer-panel" aria-labelledby="answer-heading" aria-live="polite">
+                <div class="answer-header">
+                    <h2 id="answer-heading">Your study space</h2>
+                    {% if answer_source %}<span class="tag">{{ answer_source }}</span>{% endif %}
+                </div>
+                {% if error %}<div class="answer-error" role="status">{{ error }} We’ve added a local suggestion below.</div>{% endif %}
+                {% if answer %}
+                    <div class="answer-copy">{{ answer }}</div>
+                {% else %}
+                    <div class="answer-copy empty"><div><span class="sparkle" aria-hidden="true">✦</span><strong>Your next good study session starts here.</strong><br>Pick a coach tool and your response will appear here.</div></div>
+                {% endif %}
+            </section>
+        </div>
+
+        <section class="ideas" aria-label="Study Coach tools">
+            <article class="idea"><span class="idea-icon" aria-hidden="true">💡</span><strong>Make a hard idea click</strong><p>Get a clear explanation, an example, and a quick question to check your understanding.</p></article>
+            <article class="idea"><span class="idea-icon" aria-hidden="true">🗓️</span><strong>Know what to do next</strong><p>Turn upcoming deadlines and exams into smaller, more manageable study steps.</p></article>
+            <article class="idea"><span class="idea-icon" aria-hidden="true">🧠</span><strong>Practice active recall</strong><p>Build a quiz from your subject notes and flashcards, then test what you remember.</p></article>
+        </section>
+    </main>
+    <script>
+        (() => {
+            const mode = document.getElementById('{{ form.mode.id_for_label }}');
+            const prompt = document.getElementById('{{ form.prompt.id_for_label }}');
+            const promptField = document.getElementById('prompt-field');
+            const promptOptional = document.getElementById('prompt-optional');
+            const sync = () => {
+                const needsPrompt = mode.value === 'ask';
+                prompt.required = needsPrompt;
+                promptField.hidden = mode.value === 'plan';
+                if (promptOptional) promptOptional.textContent = needsPrompt ? '(required)' : '(optional)';
+                prompt.placeholder = mode.value === 'quiz'
+                    ? 'Optional: focus the quiz on a topic or chapter.'
+                    : 'For example: Explain quadratic equations with a simple example.';
+            };
+            mode.addEventListener('change', sync);
+            sync();
+        })();
+    </script>
+</body>
+</html>

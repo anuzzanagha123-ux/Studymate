@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" fill="none">
+  <title>Colorful books, a pencil, and a small growing plant</title>
+  <ellipse cx="120" cy="164" rx="94" ry="12" fill="#0f172a" opacity=".12"/>
+  <path d="M33 111h73v47H33z" fill="#2563eb"/>
+  <path d="M40 103h73v47H40z" fill="#60a5fa"/>
+  <path d="M47 95h73v47H47z" fill="#dbeafe"/>
+  <path d="M55 105h47m-47 8h38" stroke="#2563eb" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+  <path d="M119 126h75v32h-75z" fill="#fbbf24"/>
+  <path d="M125 118h74v32h-74z" fill="#fb923c"/>
+  <path d="M132 110h72v32h-72z" fill="#fed7aa"/>
+  <path d="m75 88 5-51 11 1-5 51-8 11-3-12Z" fill="#f472b6"/>
+  <path d="m80 37 2-15 11 1-2 15" fill="#334155"/>
+  <path d="m78 89 8 1-5 10-3-11Z" fill="#fcd34d"/>
+  <path d="M170 107V68" stroke="#15803d" stroke-width="5" stroke-linecap="round"/>
+  <path d="M170 84c-20 0-25-13-23-24 15 1 24 9 23 24Zm1-8c1-19 12-27 25-26 0 15-9 25-25 26Z" fill="#4ade80"/>
+  <path d="M156 108h29l-4 24h-21l-4-24Z" fill="#f97316"/>
+  <path d="M154 107h33v7h-33z" rx="3" fill="#fdba74"/>
+  <circle cx="47" cy="56" r="7" fill="#fde68a"/>
+  <path d="M193 43v15m-7-7h15" stroke="#93c5fd" stroke-width="4" stroke-linecap="round"/>
+</svg>

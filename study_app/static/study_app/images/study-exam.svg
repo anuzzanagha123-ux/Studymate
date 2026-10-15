@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" fill="none">
+  <title>Calendar page marked for an upcoming exam</title>
+  <ellipse cx="119" cy="166" rx="83" ry="11" fill="#0f172a" opacity=".12"/>
+  <rect x="47" y="34" width="138" height="119" rx="15" fill="#fff"/>
+  <path d="M47 49a15 15 0 0 1 15-15h108a15 15 0 0 1 15 15v21H47V49Z" fill="#2563eb"/>
+  <path d="M79 25v23m74-23v23" stroke="#bfdbfe" stroke-width="7" stroke-linecap="round"/>
+  <path d="M68 87h13m18 0h13m18 0h13m18 0h11M68 111h13m18 0h13m18 0h13m18 0h11" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round"/>
+  <rect x="94" y="100" width="20" height="20" rx="6" fill="#dbeafe"/>
+  <rect x="130" y="124" width="20" height="20" rx="6" fill="#dbeafe"/>
+  <circle cx="176" cy="127" r="26" fill="#dcfce7"/>
+  <path d="m164 127 8 8 16-18" stroke="#16a34a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m47 145 138-78" stroke="#fff" stroke-width="2" opacity=".5"/>
+  <circle cx="57" cy="23" r="7" fill="#fbbf24"/>
+  <path d="M199 49v18m-9-9h18" stroke="#f9a8d4" stroke-width="4" stroke-linecap="round"/>
+</svg>

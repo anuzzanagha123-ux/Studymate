@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" fill="none">
+  <title>Student studying beside a glowing desk lamp and open book</title>
+  <ellipse cx="120" cy="164" rx="92" ry="12" fill="#0f172a" opacity=".12"/>
+  <circle cx="122" cy="82" r="62" fill="#bfdbfe" opacity=".38"/>
+  <path d="M36 143h169" stroke="#64748b" stroke-width="7" stroke-linecap="round"/>
+  <path d="M58 145v18m127-18v18" stroke="#94a3b8" stroke-width="7" stroke-linecap="round"/>
+  <path d="M94 88c0-22 13-36 31-36s31 14 31 36v35H94V88Z" fill="#2563eb"/>
+  <circle cx="125" cy="58" r="20" fill="#f4c7a1"/>
+  <path d="M105 58c2-22 20-30 36-20 7 4 10 12 10 21-13-5-27-4-39 5l-7 5v-11Z" fill="#172554"/>
+  <path d="M114 62h1m19 0h1" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+  <path d="M91 124h68l-8 30h-54l-6-30Z" fill="#dbeafe"/>
+  <path d="M125 126v27" stroke="#93c5fd" stroke-width="3"/>
+  <path d="M174 102V52m0 1-25 18h49l-24-18Z" fill="#fbbf24"/>
+  <path d="M164 102h20" stroke="#fbbf24" stroke-width="6" stroke-linecap="round"/>
+  <path d="M58 56V34m-10 11h20" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <path d="m188 34 5 5m0-10v7m6-2-5 5" stroke="#f9a8d4" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="62" cy="94" r="6" fill="#4ade80"/>
+</svg>

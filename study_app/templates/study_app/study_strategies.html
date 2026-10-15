@@ -1,0 +1,76 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Study Strategies | StudyMate</title>
+    <style>
+        :root { --ink: #172033; --muted: #64748b; --blue: #2563eb; --navy: #10233e; --line: #dbe4ee; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: radial-gradient(circle at 88% 5%, #dbeafe 0, transparent 30%), #f4f7fb; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+        main { width: min(1060px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 56px; }
+        .back { display: inline-block; margin: 4px 0 18px; color: var(--blue); font-weight: 700; text-decoration: none; }
+        .hero { display: grid; grid-template-columns: 1fr 220px; align-items: center; gap: 24px; padding: clamp(24px, 5vw, 42px); border-radius: 22px; background: linear-gradient(120deg, #10233e, #2563eb); color: #fff; }
+        .eyebrow { margin: 0 0 9px; color: #bfdbfe; font-size: .76rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.04em; }
+        .hero p:last-child { max-width: 620px; margin: 12px 0 0; color: #dbeafe; line-height: 1.7; }
+        .hero img { width: 100%; max-height: 170px; object-fit: contain; }
+        .section-heading { margin: 32px 0 15px; color: var(--navy); font-size: 1.35rem; }
+        .tips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .tip { display: flex; gap: 14px; padding: 20px; border: 1px solid var(--line); border-radius: 15px; background: #fff; box-shadow: 0 6px 18px #0f1f3808; }
+        .number { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border-radius: 12px; background: #eff6ff; color: var(--blue); font-weight: 800; }
+        h2 { margin: 2px 0 7px; color: var(--navy); font-size: 1.04rem; }
+        .tip p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.65; }
+        .next-step { margin-top: 18px; padding: 22px; border-radius: 16px; background: #eaf2ff; }
+        .next-step h2 { margin-top: 0; }
+        .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .links a { padding: 10px 14px; border-radius: 9px; background: var(--blue); color: #fff; font-weight: 700; text-decoration: none; }
+        .links a.secondary { border: 1px solid #cbd5e1; background: #fff; color: var(--navy); }
+        a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+        @media (max-width: 640px) { .hero { grid-template-columns: 1fr; } .hero img { display: none; } .tips { grid-template-columns: 1fr; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Small habits, big progress</p>
+                <h1>Study strategies</h1>
+                <p>Try a few simple approaches, notice what works for you, and build a study routine that feels manageable.</p>
+            </div>
+            <img src="{% static 'study_app/images/study-progress.svg' %}" alt="Illustration representing steady study progress">
+        </header>
+        <h2 class="section-heading">Four ideas to try this week</h2>
+        <section class="tips" aria-label="Study strategy ideas">
+            <article class="tip">
+                <span class="number">01</span>
+                <div><h2>Active recall</h2><p>Close your notes and write down what you remember. Use flashcards to test yourself, then check and correct your answers.</p></div>
+            </article>
+            <article class="tip">
+                <span class="number">02</span>
+                <div><h2>Space your revision</h2><p>Return to a topic over several days instead of cramming it all at once. A short review today can make the next one easier.</p></div>
+            </article>
+            <article class="tip">
+                <span class="number">03</span>
+                <div><h2>Make the next step small</h2><p>Turn “study biology” into one clear action, like “review cell diagrams for 20 minutes.” Small starts reduce friction.</p></div>
+            </article>
+            <article class="tip">
+                <span class="number">04</span>
+                <div><h2>Protect your focus</h2><p>Choose one task, silence distractions for a short block, and take a real break when you finish. Consistency matters more than marathon sessions.</p></div>
+            </article>
+        </section>
+        <aside class="next-step">
+            <h2>Put an idea into practice</h2>
+            <p>Pick a subject and start with one manageable session. Your notes and study log can help you see what is working over time.</p>
+            <div class="links">
+                <a href="{% url 'focus_timer' %}">Try the focus timer</a>
+                <a class="secondary" href="{% url 'learning_hub' %}">Open learning toolkit</a>
+                <a class="secondary" href="{% url 'task_tracking' %}">Plan a study task</a>
+            </div>
+        </aside>
+    </main>
+</body>
+</html>

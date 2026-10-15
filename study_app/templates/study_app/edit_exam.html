@@ -1,0 +1,39 @@
+<html>
+<head>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Edit exam | StudyMate</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 24px; background: #eef3f8; color: #172033; font-family: "Segoe UI", Arial, sans-serif; }
+        main { width: min(100%, 620px); margin: 8vh auto; padding: 28px; border: 1px solid #dbe4ee; border-radius: 16px; background: white; box-shadow: 0 12px 30px rgba(15, 31, 56, 0.07); }
+        h1 { margin: 0 0 20px; color: #0f1f38; font-size: clamp(1.7rem, 5vw, 2.3rem); }
+        form { display: grid; gap: 16px; }
+        label { display: block; margin-bottom: 6px; color: #334155; font-size: 0.84rem; font-weight: 700; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; color: inherit; font: inherit; }
+        textarea { resize: vertical; }
+        input:focus, select:focus, textarea:focus { outline: 3px solid rgba(37, 99, 235, 0.15); border-color: #2563eb; }
+        .errors { color: #b91c1c; font-size: 0.84rem; }
+        button { justify-self: start; padding: 11px 15px; border: 0; border-radius: 8px; background: #2563eb; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+        @media (max-width: 520px) { body { padding: 12px; } main { margin: 12px auto; padding: 20px 16px; } button { width: 100%; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/exams/" %}
+        <h1>Edit exam</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}<div class="errors">{{ error }}</div>{% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit">Save exam</button>
+        </form>
+    </main>
+</body>
+</html>

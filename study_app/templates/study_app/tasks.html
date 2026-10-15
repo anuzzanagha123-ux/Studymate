@@ -1,0 +1,163 @@
+<html>
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Task Tracking | StudyMate</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: #eef3f8; color: #172033; }
+        .dashboard { min-height: 100vh; }
+        .content { padding: 42px clamp(22px, 5vw, 64px); }
+        .container { max-width: 1180px; margin: 0 auto; }
+        .hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 26px 32px; border-radius: 16px; background: linear-gradient(120deg, #10233e 0%, #1d4ed8 62%, #3b82f6 100%); color: white; box-shadow: 0 18px 35px rgba(30, 64, 175, 0.2); }
+        .hero h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.3rem); letter-spacing: -0.04em; }
+        .hero p { max-width: 680px; margin: 12px 0 0; color: rgba(255,255,255,0.82); line-height: 1.7; }
+        .hero-art { flex: 0 0 170px; width: 170px; height: 132px; padding: 8px; border: 1px solid #ffffff35; border-radius: 18px; background: #ffffff12; }
+        .hero-art img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .badge { display: inline-block; margin-bottom: 12px; padding: 7px 11px; border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; background: rgba(255,255,255,0.12); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+        .task-panel { margin-top: 24px; padding: 26px; border: 1px solid #dbe4ee; border-radius: 16px; background: white; box-shadow: 0 7px 18px rgba(15, 31, 56, 0.05); }
+        .panel-head { margin-bottom: 18px; }
+        .panel-head h2 { margin: 0; color: #0f1f38; font-size: 1.35rem; }
+        .task-form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+        .task-form input, .task-form select { flex: 1; min-width: 150px; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: #172033; font: inherit; font-size: 0.92rem; }
+        .task-form input:focus, .task-form select:focus { outline: 3px solid rgba(37, 99, 235, 0.15); border-color: #2563eb; }
+        .form-errors { flex-basis: 100%; margin: 0; padding: 10px 12px; border: 1px solid #fecaca; border-radius: 8px; background: #fef2f2; color: #b91c1c; font-size: 0.84rem; }
+        .task-form label { flex: 1; min-width: 150px; color: #475569; font-size: 0.8rem; font-weight: 700; }
+        .task-form label input, .task-form label select { width: 100%; margin-top: 5px; }
+        .task-filters { display: grid; grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(140px, 190px)) auto auto; gap: 9px; align-items: end; margin: 0 0 14px; padding: 14px; border: 1px solid #e2e8f0; border-radius: 11px; background: #f8fafc; }
+        .task-filters label { display: grid; gap: 6px; color: #475569; font-size: 0.76rem; font-weight: 700; }
+        .task-filters input, .task-filters select { min-width: 0; padding: 10px 11px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #172033; font: inherit; font-size: 0.86rem; }
+        .task-filters input:focus, .task-filters select:focus { outline: 3px solid rgba(37, 99, 235, 0.15); border-color: #2563eb; }
+        .task-filters button, .clear-filters { min-height: 40px; padding: 9px 12px; border: 0; border-radius: 8px; background: #0f1f38; color: white; font: inherit; font-size: 0.82rem; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; }
+        .clear-filters { display: inline-flex; align-items: center; justify-content: center; background: #e8eef5; color: #334155; }
+        .task-filter-summary { margin: 0 0 12px; color: #64748b; font-size: 0.82rem; }
+        .task-pagination { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
+        .task-pagination a { padding: 8px 11px; border: 1px solid #dbe4ee; border-radius: 8px; background: #fff; color: #1d4ed8; font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+        .task-pagination a:hover { border-color: #93c5fd; background: #eff6ff; }
+        .task-pagination span { color: #64748b; font-size: 0.78rem; }
+        button, .edit-link { border: 0; border-radius: 8px; padding: 10px 14px; font-size: 0.86rem; font-weight: 700; cursor: pointer; text-decoration: none; }
+        .primary-btn { background: #2563eb; color: white; }
+        .primary-btn:hover { background: #1d4ed8; }
+        .task-list { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+        .task-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 17px 18px; border: 1px solid #dbe4ee; border-left: 3px solid #f59e0b; border-radius: 10px; background: #fff; box-shadow: 0 2px 7px rgba(15, 31, 56, 0.03); }
+        .task-item.done { border-left-color: #22c55e; background: #f7fcf8; }
+        .task-info { display: grid; gap: 7px; min-width: 0; }
+        .task-name { color: #0f172a; font-size: 0.95rem; font-weight: 700; overflow-wrap: anywhere; }
+        .task-item.done .task-name { color: #475569; text-decoration: line-through; }
+        .task-status { width: fit-content; padding: 4px 8px; border-radius: 999px; background: #fff7ed; color: #b45309; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+        .task-item.done .task-status { background: #dcfce7; color: #15803d; }
+        .task-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .edit-link { background: #eef3f8; color: #0f1f38; }
+        .toggle-btn { color: white; }
+        .toggle-btn.pending { background: #d97706; }
+        .toggle-btn.pending:hover { background: #b45309; }
+        .toggle-btn.done { background: #16a34a; }
+        .toggle-btn.done:hover { background: #15803d; }
+        .delete-btn { background: #ef4444; color: white; }
+        .empty { padding: 22px; border: 1px dashed #cbd5e1; border-radius: 12px; background: white; color: #64748b; text-align: center; }
+        @media (max-width: 780px) { .task-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 700px) { .content { padding: 16px; } .hero { padding: 22px; } .hero-art { flex-basis: 120px; width: 120px; height: 105px; } .task-item { align-items: flex-start; } }
+        @media (max-width: 430px) { .task-filters { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .hero-art { display: none; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <div class="dashboard">
+        <main class="content">
+            <div class="container">
+                {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+                <header class="hero">
+                    <div>
+                        <span class="badge">Academic Planner</span>
+                        <h1>Task Tracking</h1>
+                        <p>Manage your daily study actions and keep your academic work organized.</p>
+                    </div>
+                    <div class="hero-art"><img src="{% static 'study_app/images/study-checklist.svg' %}" alt="Illustration of a study checklist with completed tasks"></div>
+                </header>
+                <section class="task-panel">
+                    <div class="panel-head"><h2>Study Tasks</h2></div>
+                    <form method="post" action="{% url 'add_task' %}" class="task-form">
+                        {% csrf_token %}
+                        {% if form.errors %}<ul class="form-errors">{% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}</ul>{% endif %}
+                        {% for field in form %}<label for="{{ field.id_for_label }}">{{ field.label }}{{ field }}</label>{% endfor %}
+                        <button type="submit" class="primary-btn">Add task</button>
+                    </form>
+                    <form method="get" action="{% url 'task_tracking' %}" class="task-filters" role="search">
+                        <label for="task-query">Search tasks<input id="task-query" type="search" name="q" value="{{ query }}" placeholder="Task or subject"></label>
+                        <label for="task-status">Status
+                            <select id="task-status" name="status">
+                                <option value="all"{% if selected_status == 'all' %} selected{% endif %}>All tasks ({{ total_tasks_count }})</option>
+                                <option value="pending"{% if selected_status == 'pending' %} selected{% endif %}>Pending ({{ pending_tasks_count }})</option>
+                                <option value="completed"{% if selected_status == 'completed' %} selected{% endif %}>Completed ({{ completed_tasks_count }})</option>
+                            </select>
+                        </label>
+                        <label for="task-subject">Subject
+                            <select id="task-subject" name="subject">
+                                <option value="">All subjects</option>
+                                {% for subject in subjects %}
+                                    <option value="{{ subject.pk }}"{% if selected_subject == subject.pk %} selected{% endif %}>{{ subject.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                        <button type="submit">Apply filters</button>
+                        <a class="clear-filters" href="{% url 'task_tracking' %}">Clear</a>
+                    </form>
+                    <p class="task-filter-summary">
+                        {% if page_obj.paginator.count %}
+                            Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ visible_task_count }} matching task{{ visible_task_count|pluralize }} ({{ total_tasks_count }} total).
+                        {% else %}
+                            No matching tasks ({{ total_tasks_count }} total).
+                        {% endif %}
+                    </p>
+                    {% if tasks %}
+                        <ul class="task-list">
+                            {% for task in tasks %}
+                                <li class="task-item {% if task.completed %}done{% endif %}">
+                                    <div class="task-info" aria-label="{{ task.title }} - {% if task.completed %}Completed{% else %}Pending{% endif %}">
+                                        <span class="task-name">{{ task.title }}</span>
+                                        {% if task.subject %}<span class="task-status">{{ task.subject.name }}</span>{% endif %}
+                                        <span class="task-status">Priority: {{ task.get_priority_display }}</span>
+                                        {% if task.due_date %}<span class="task-status">Due {{ task.due_date|date:"M j, Y" }}</span>{% endif %}
+                                        <span class="task-status">{% if task.completed %}Completed{% else %}Pending{% endif %}</span>
+                                    </div>
+                                    <div class="task-actions">
+                                        <a href="{% url 'edit_task' task.pk %}" class="edit-link">Edit</a>
+                                        <form method="post" action="{% url 'toggle_task' task.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="toggle-btn {% if task.completed %}pending{% else %}done{% endif %}">{% if task.completed %}Mark pending{% else %}Mark done{% endif %}</button>
+                                        </form>
+                                        <form method="post" action="{% url 'delete_task' task.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="delete-btn">Delete</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        {% if page_obj.has_other_pages %}
+                            <nav class="task-pagination" aria-label="Task pages">
+                                {% if page_obj.has_previous %}
+                                    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}status={{ selected_status }}{% if selected_subject %}&amp;subject={{ selected_subject }}{% endif %}&amp;page={{ page_obj.previous_page_number }}">Previous</a>
+                                {% else %}
+                                    <span></span>
+                                {% endif %}
+                                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                {% if page_obj.has_next %}
+                                    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}status={{ selected_status }}{% if selected_subject %}&amp;subject={{ selected_subject }}{% endif %}&amp;page={{ page_obj.next_page_number }}">Next</a>
+                                {% else %}
+                                    <span></span>
+                                {% endif %}
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty">
+                            {% if total_tasks_count %}No tasks match these filters. <a href="{% url 'task_tracking' %}">Clear filters</a>.{% else %}No study tasks yet. Add your first task above.{% endif %}
+                        </div>
+                    {% endif %}
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

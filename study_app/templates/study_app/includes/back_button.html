@@ -1,0 +1,43 @@
+{% if request.user.is_authenticated %}
+<header class="app-nav-shell">
+    <nav class="app-nav" aria-label="Main navigation">
+        <a class="app-brand" href="{% url 'dashboard' %}">
+            <span class="app-brand-mark" aria-hidden="true">S</span>
+            <span>StudyMate</span>
+        </a>
+        <div class="app-nav-links">
+            <a href="{% url 'dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} aria-current="page"{% endif %}>Overview</a>
+            <a href="{% url 'subject_management' %}"{% if request.resolver_match.url_name == 'subject_management' or request.resolver_match.url_name == 'add_subject' or request.resolver_match.url_name == 'edit_subject' %} aria-current="page"{% endif %}>Subjects</a>
+            <a href="{% url 'task_tracking' %}"{% if request.resolver_match.url_name == 'task_tracking' or request.resolver_match.url_name == 'add_task' or request.resolver_match.url_name == 'edit_task' %} aria-current="page"{% endif %}>Tasks</a>
+            <a href="{% url 'exam_management' %}"{% if request.resolver_match.url_name == 'exam_management' or request.resolver_match.url_name == 'add_exam' or request.resolver_match.url_name == 'edit_exam' %} aria-current="page"{% endif %}>Exams</a>
+            <a href="{% url 'study_calendar' %}"{% if request.resolver_match.url_name == 'study_calendar' %} aria-current="page"{% endif %}>Calendar</a>
+            <a href="{% url 'learning_hub' %}"{% if request.resolver_match.url_name == 'learning_hub' %} aria-current="page"{% endif %}>Learning</a>
+            <a href="{% url 'progress_tracking' %}"{% if request.resolver_match.url_name == 'progress_tracking' %} aria-current="page"{% endif %}>Progress</a>
+            <a href="{% url 'study_planner' %}"{% if request.resolver_match.url_name == 'study_planner' %} aria-current="page"{% endif %}>Planner</a>
+            <a href="{% url 'study_coach' %}"{% if request.resolver_match.url_name == 'study_coach' %} aria-current="page"{% endif %}>AI Coach</a>
+            <a href="{% url 'focus_timer' %}"{% if request.resolver_match.url_name == 'focus_timer' %} aria-current="page"{% endif %}>Focus</a>
+            <a href="{% url 'study_strategies' %}"{% if request.resolver_match.url_name == 'study_strategies' %} aria-current="page"{% endif %}>Strategies</a>
+        </div>
+        <div class="app-nav-user">
+            <span>{{ request.user.first_name|default:request.user.username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Log out</button>
+            </form>
+        </div>
+    </nav>
+</header>
+{% if messages %}
+    <div class="app-page-messages" role="status">
+        {% for message in messages %}
+            <div class="app-page-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endif %}
+<a
+    href="{{ back_url }}"
+    aria-label="Go back to the previous page"
+    onclick="if (document.referrer && new URL(document.referrer).origin === window.location.origin) { window.history.back(); return false; }"
+    style="display: inline-flex; align-items: center; gap: 6px; margin: 0 0 16px; padding: 9px 13px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #0f1f38; font: 600 0.88rem 'Segoe UI', Arial, sans-serif; text-decoration: none;"
+>&larr; Back</a>

@@ -1,0 +1,167 @@
+<html>
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Learning toolkit | StudyMate</title>
+    <style>
+        :root { --ink: #172033; --muted: #64748b; --line: #dbe4ee; --blue: #2563eb; --navy: #10233e; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #eef3f8; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+        main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+        .hero { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 24px 28px; border-radius: 18px; background: linear-gradient(120deg, var(--navy), #1d4ed8); color: white; }
+        .hero h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.7rem); }
+        .hero p { margin: 10px 0 0; color: #dbeafe; line-height: 1.6; }
+        .hero-art { flex: 0 0 170px; width: 170px; height: 135px; padding: 8px; border: 1px solid #ffffff35; border-radius: 18px; background: #ffffff12; }
+        .hero-art img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .stats, .columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+        .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .stat, .panel { padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 5px 16px rgba(15, 31, 56, 0.05); }
+        .stat span { display: block; color: var(--muted); font-size: 0.84rem; font-weight: 700; }
+        .stat strong { display: block; margin-top: 7px; color: var(--navy); font-size: 1.6rem; }
+        .panel { margin-top: 16px; }
+        h2 { margin: 0 0 14px; color: var(--navy); font-size: 1.25rem; }
+        h3 { margin: 0; color: var(--navy); font-size: 1rem; }
+        .panel-intro, .muted { color: var(--muted); line-height: 1.55; }
+        .form p { margin: 12px 0; }
+        .form label { display: block; margin-bottom: 5px; color: #334155; font-size: 0.88rem; font-weight: 700; }
+        .form input, .form select, .form textarea { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: var(--ink); font: inherit; }
+        .form textarea { resize: vertical; }
+        .form input:focus, .form select:focus, .form textarea:focus { outline: 3px solid #bfdbfe; border-color: var(--blue); }
+        .errorlist { margin: 6px 0; padding-left: 20px; color: #b91c1c; font-size: 0.85rem; }
+        button, .link-button { padding: 10px 14px; border: 0; border-radius: 8px; background: var(--blue); color: white; font: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; text-decoration: none; }
+        button:hover, .link-button:hover { background: #1d4ed8; }
+        .list { display: grid; gap: 10px; padding: 0; margin: 14px 0 0; list-style: none; }
+        .item { padding: 15px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fbfdff; }
+        .item-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+        .subject { color: var(--muted); font-size: 0.8rem; }
+        details { margin-top: 10px; }
+        summary { color: var(--blue); font-weight: 700; cursor: pointer; }
+        .answer { margin: 8px 0; line-height: 1.6; }
+        .review-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .review-actions button { padding: 8px 10px; }
+        .review-actions .incorrect { background: #64748b; }
+        .delete-button { padding: 6px 9px; background: #fee2e2; color: #b91c1c; font-size: 0.78rem; }
+        .delete-button:hover { background: #fecaca; }
+        .empty { padding: 14px; border: 1px dashed #cbd5e1; border-radius: 9px; color: var(--muted); }
+        a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+        @media (max-width: 720px) { .columns { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hero { padding: 22px; } .hero-art { flex-basis: 125px; width: 125px; height: 105px; } }
+        @media (max-width: 480px) { .hero-art { display: none; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <header class="hero">
+            <div>
+                <h1>Learning toolkit</h1>
+                <p>Log focused study time, quiz yourself with flashcards that schedule their next review, and keep your subject notes together.</p>
+            </div>
+            <div class="hero-art"><img src="{% static 'study_app/images/study-focus.svg' %}" alt="Illustration of a student studying beside a desk lamp and open book"></div>
+        </header>
+
+        <section class="stats" aria-label="Learning statistics">
+            <article class="stat"><span>Total study time</span><strong>{{ study_minutes }} min</strong></article>
+            <article class="stat"><span>Flashcard reviews</span><strong>{{ quiz_reviews }}</strong></article>
+            <article class="stat"><span>Self-test accuracy</span><strong>{{ quiz_accuracy }}%</strong></article>
+            <article class="stat"><span>Cards due today</span><strong>{{ due_flashcards_count }}</strong></article>
+        </section>
+
+        <div class="columns">
+            <section class="panel" aria-labelledby="session-heading">
+                <h2 id="session-heading">Log a study session</h2>
+                <p class="panel-intro">Add a subject, date, and duration from 1 to 600 minutes.</p>
+                <form class="form" method="post" action="{% url 'add_study_session' %}">
+                    {% csrf_token %}
+                    {{ session_form.as_p }}
+                    <button type="submit">Save session</button>
+                </form>
+                <h3>Recent sessions</h3>
+                {% if sessions %}
+                    <ul class="list">
+                        {% for session in sessions %}
+                            <li class="item">
+                                <div class="item-head"><strong>{{ session.subject.name }}</strong><span>{{ session.duration_minutes }} min</span></div>
+                                <span class="subject">{{ session.date|date:"M j, Y" }}</span>
+                                {% if session.notes %}<p class="muted">{{ session.notes }}</p>{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty">No study sessions logged yet.</p>
+                {% endif %}
+            </section>
+
+            <section class="panel" aria-labelledby="flashcard-heading">
+                <h2 id="flashcard-heading">Create a flashcard</h2>
+                <p class="panel-intro">Reveal each answer, then rate how well you remembered it to build your self-test score.</p>
+                <form class="form" method="post" action="{% url 'add_flashcard' %}">
+                    {% csrf_token %}
+                    {{ flashcard_form.as_p }}
+                    <button type="submit">Add flashcard</button>
+                </form>
+                <h3>Practice cards</h3>
+                {% if flashcards %}
+                    <ul class="list">
+                        {% for card in flashcards %}
+                            <li class="item">
+                                <div class="item-head">
+                                    <strong>{{ card.front }}</strong>
+                                    <span class="subject">{{ card.subject.name }}</span>
+                                </div>
+                                <details>
+                                    <summary>Reveal answer</summary>
+                                    <p class="answer">{{ card.back|linebreaksbr }}</p>
+                                </details>
+                                <span class="subject">{{ card.correct_count }} / {{ card.review_count }} correct reviews</span>
+                                <span class="subject">{% if card.next_review_date <= today %}Due for review{% else %}Next review {{ card.next_review_date|date:"M j" }}{% endif %} | {{ card.interval_days }} day interval</span>
+                                <div class="review-actions">
+                                    <form method="post" action="{% url 'review_flashcard' card.pk %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="result" value="correct">
+                                        <button type="submit">I knew it</button>
+                                    </form>
+                                    <form method="post" action="{% url 'review_flashcard' card.pk %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="result" value="incorrect">
+                                        <button class="incorrect" type="submit">Need to review</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty">Add a flashcard to start a self-test.</p>
+                {% endif %}
+            </section>
+        </div>
+
+        <section class="panel" aria-labelledby="notes-heading">
+            <h2 id="notes-heading">Personal study notes</h2>
+            <form class="form" method="post" action="{% url 'add_study_note' %}">
+                {% csrf_token %}
+                {{ note_form.as_p }}
+                <button type="submit">Save note</button>
+            </form>
+            {% if notes %}
+                <ul class="list">
+                    {% for note in notes %}
+                        <li class="item">
+                            <div class="item-head">
+                                <div><h3>{{ note.title }}</h3><span class="subject">{{ note.subject.name|default:"General note" }} · updated {{ note.updated_at|date:"M j, Y" }}</span></div>
+                                <form method="post" action="{% url 'delete_study_note' note.pk %}">
+                                    {% csrf_token %}
+                                    <button class="delete-button" type="submit">Delete</button>
+                                </form>
+                            </div>
+                            <p class="answer">{{ note.content|linebreaksbr }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty">Save notes here to keep your revision material in one place.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

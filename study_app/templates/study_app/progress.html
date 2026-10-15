@@ -1,0 +1,149 @@
+<html>
+<head>
+  {% load static %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progress Tracking | StudyMate</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #172033;
+            --muted: #64748b;
+            --line: #dbe4ee;
+            --blue: #2563eb;
+            --navy: #0f1f38;
+            --surface: #ffffff;
+            --background: #eef3f8;
+            --green: #15803d;
+        }
+
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; background: radial-gradient(circle at top right, #dbeafe 0, transparent 34%), var(--background); }
+        .page { width: min(100% - 32px, 960px); margin: 0 auto; padding: clamp(20px, 5vw, 48px) 0; }
+        .hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: clamp(22px, 4vw, 34px); border-radius: 18px; background: linear-gradient(120deg, #10233e, #1d4ed8 70%, #60a5fa); color: white; box-shadow: 0 14px 30px rgba(30, 64, 175, 0.16); }
+        .eyebrow { margin: 0 0 8px; color: #bfdbfe; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(1.7rem, 4vw, 2.5rem); letter-spacing: -0.04em; }
+        .intro { max-width: 580px; margin: 10px 0 0; color: rgba(255,255,255,0.86); line-height: 1.6; }
+        .hero-art { flex: 0 0 150px; width: 150px; height: 120px; padding: 7px; border: 1px solid #ffffff35; border-radius: 18px; background: #ffffff12; }
+        .hero-art img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .back-link { flex: 0 0 auto; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.45); border-radius: 8px; color: white; font-size: 0.84rem; font-weight: 700; text-decoration: none; }
+        .back-link:hover { background: rgba(255,255,255,0.14); }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 14px; margin-top: 18px; }
+        .summary-card, .panel { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 5px 16px rgba(15, 31, 56, 0.05); }
+        .summary-card { padding: 20px; }
+        .summary-label { display: block; color: var(--muted); font-size: 0.83rem; font-weight: 700; }
+        .summary-value { display: block; margin-top: 8px; color: var(--navy); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; line-height: 1.1; }
+        .summary-card.complete .summary-value { color: var(--green); }
+        .panel { margin-top: 18px; padding: clamp(18px, 3vw, 26px); }
+        .panel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+        h2 { margin: 0; color: var(--navy); font-size: 1.2rem; }
+        .percent { color: var(--blue); font-size: 0.9rem; font-weight: 800; }
+        .overall-progress { width: 100%; height: 12px; overflow: hidden; border: 0; border-radius: 999px; background: #e8eef5; accent-color: var(--blue); }
+        .overall-progress::-webkit-progress-bar { border-radius: 999px; background: #e8eef5; }
+        .overall-progress::-webkit-progress-value { border-radius: 999px; background: linear-gradient(90deg, var(--blue), #60a5fa); }
+        .overall-progress::-moz-progress-bar { border-radius: 999px; background: linear-gradient(90deg, var(--blue), #60a5fa); }
+        .progress-note { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+        .subject-list { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+        .subject-item { padding: 16px; border: 1px solid #e8eef5; border-radius: 10px; }
+        .subject-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+        .subject-name { min-width: 0; color: var(--navy); font-weight: 800; overflow-wrap: anywhere; }
+        .subject-count { flex: 0 0 auto; color: var(--muted); font-size: 0.8rem; }
+        .empty { padding: 20px; border: 1px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; color: var(--muted); text-align: center; line-height: 1.6; }
+        .empty a { color: var(--blue); font-weight: 700; text-decoration: none; }
+        .empty a:hover { text-decoration: underline; }
+        a:focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+        @media (max-width: 640px) {
+            .hero { align-items: flex-start; flex-direction: column; }
+            .hero-art { align-self: flex-end; }
+            .summary { grid-template-columns: 1fr; gap: 10px; }
+            .summary-card { padding: 16px; }
+            .summary-value { margin-top: 4px; }
+        }
+        @media (max-width: 380px) {
+            .page { width: min(100% - 24px, 960px); }
+            .subject-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+        }
+        @media (max-width: 420px) { .hero-art { display: none; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main class="page">
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <header class="hero">
+            <div>
+                <p class="eyebrow">StudyMate module</p>
+                <h1>Progress Tracking</h1>
+                <p class="intro">See how much study work you have completed overall and for each subject.</p>
+            </div>
+            <div class="hero-art"><img src="{% static 'study_app/images/study-progress.svg' %}" alt="Illustration of books and a rising progress chart"></div>
+        </header>
+
+        <section class="summary" aria-label="Study summary">
+            <article class="summary-card">
+                <span class="summary-label">Study today</span>
+                <span class="summary-value">{{ daily_study_minutes }} min</span>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Study this week</span>
+                <span class="summary-value">{{ weekly_study_minutes }} min</span>
+            </article>
+            <article class="summary-card complete">
+                <span class="summary-label">Completed tasks</span>
+                <span class="summary-value">{{ completed_tasks }}</span>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Pending tasks</span>
+                <span class="summary-value">{{ pending_tasks }}</span>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Total tasks</span>
+                <span class="summary-value">{{ total_tasks }}</span>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Study time logged</span>
+                <span class="summary-value">{{ study_minutes }} min</span>
+            </article>
+            <article class="summary-card complete">
+                <span class="summary-label">Self-test accuracy</span>
+                <span class="summary-value">{{ quiz_accuracy }}%</span>
+            </article>
+        </section>
+
+        <section class="panel" aria-labelledby="overall-heading">
+            <div class="panel-heading">
+                <h2 id="overall-heading">Overall completion</h2>
+                <span class="percent">{{ completion_percent }}%</span>
+            </div>
+            <progress class="overall-progress" max="100" value="{{ completion_percent }}" aria-label="Overall task completion: {{ completion_percent }} percent">{{ completion_percent }}%</progress>
+            <p class="progress-note">
+                {% if total_tasks %}
+                    {{ completed_tasks }} of {{ total_tasks }} task{{ total_tasks|pluralize }} completed.
+                {% else %}
+                    Add study tasks to start tracking your progress.
+                {% endif %}
+            </p>
+        </section>
+
+        <section class="panel" aria-labelledby="subjects-heading">
+            <div class="panel-heading">
+                <h2 id="subjects-heading">Progress by subject</h2>
+            </div>
+            {% if subjects %}
+                <ul class="subject-list">
+                    {% for subject in subjects %}
+                        <li class="subject-item">
+                            <div class="subject-heading">
+                                <span class="subject-name">{{ subject.name }}</span>
+                                <span class="subject-count">{{ subject.completed_tasks }} / {{ subject.total_tasks }} tasks · {{ subject.study_minutes }} min studied</span>
+                            </div>
+                            <progress class="overall-progress" max="100" value="{{ subject.progress_percent }}" aria-label="{{ subject.name }} progress: {{ subject.progress_percent }} percent">{{ subject.progress_percent }}%</progress>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty">No subjects yet. <a href="{% url 'subject_management' %}">Add a subject</a> to track progress by subject.</div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

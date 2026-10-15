@@ -1,0 +1,248 @@
+<html>
+<head>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Subject Management | StudyMate</title>
+    <style>
+        :root {
+            --ink: #172033;
+            --muted: #64748b;
+            --line: #dbe4ee;
+            --blue: #2563eb;
+            --navy: #0f1f38;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --red: #dc2626;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; background: radial-gradient(circle at top right, #dbeafe, transparent 32%), var(--background); color: var(--ink); font-family: "Segoe UI", Arial, sans-serif; }
+        main { width: min(100% - 32px, 1100px); margin: 0 auto; padding: 36px 0; }
+        .hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 30px; border-radius: 18px; background: linear-gradient(120deg, #10233e, #1d4ed8 70%, #60a5fa); color: white; box-shadow: 0 14px 30px rgba(30, 64, 175, 0.18); }
+        .eyebrow { margin: 0 0 8px; color: #bfdbfe; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.04em; }
+        .intro { margin: 10px 0 0; color: rgba(255,255,255,0.85); line-height: 1.6; }
+        .hero-art { flex: 0 0 164px; width: 164px; height: 132px; padding: 10px; border: 1px solid #ffffff35; border-radius: 18px; background: #ffffff12; }
+        .hero-art img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .back-link { flex: 0 0 auto; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.45); border-radius: 8px; color: white; font-size: 0.84rem; font-weight: 700; text-decoration: none; }
+        .back-link:hover { background: rgba(255,255,255,0.14); }
+        .panel { margin-top: 20px; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 5px 16px rgba(15, 31, 56, 0.05); }
+        .panel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+        h2 { margin: 0; color: var(--navy); font-size: 1.2rem; }
+        .count { padding: 6px 10px; border-radius: 999px; background: #eff6ff; color: var(--blue); font-size: 0.78rem; font-weight: 700; }
+        .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+        .summary-card { min-width: 0; padding: 16px; border: 1px solid #e8eef5; border-radius: 11px; background: linear-gradient(145deg, #fff, #f8fbff); }
+        .summary-label { display: block; color: var(--muted); font-size: 0.75rem; font-weight: 700; }
+        .summary-value { display: block; margin-top: 6px; color: var(--navy); font-size: 1.45rem; font-weight: 800; }
+        .summary-help { display: block; margin-top: 4px; color: var(--muted); font-size: 0.72rem; }
+        .subject-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; padding: 16px; border: 1px solid #e8eef5; border-radius: 11px; background: #f8fafc; }
+        .field { display: grid; gap: 6px; }
+        label { color: #334155; font-size: 0.8rem; font-weight: 700; }
+        input, textarea, select { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: var(--ink); font: inherit; font-size: 0.88rem; }
+        textarea { min-height: 42px; max-height: 130px; resize: vertical; }
+        input:focus, textarea:focus, select:focus { outline: 3px solid rgba(37, 99, 235, 0.14); border-color: var(--blue); }
+        button, .edit-link { display: inline-block; padding: 10px 13px; border: 0; border-radius: 8px; cursor: pointer; font: inherit; font-size: 0.82rem; font-weight: 700; text-decoration: none; }
+        .add-button { background: var(--blue); color: white; }
+        .add-button:hover { background: #1d4ed8; }
+        .subject-form button { justify-self: start; }
+        .search-form { display: grid; grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(145px, 190px)) auto auto; gap: 9px; margin-bottom: 16px; }
+        .search-form input, .search-form select { min-width: 0; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; font: inherit; }
+        .search-button { background: #0f1f38; color: white; }
+        .clear-link { align-self: center; padding: 9px; color: var(--muted); font-size: 0.82rem; font-weight: 700; text-decoration: none; }
+        .error-list { grid-column: 1 / -1; margin: 0; padding-left: 18px; color: #b91c1c; font-size: 0.82rem; }
+        .subject-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0; margin: 18px 0 0; list-style: none; }
+        .subject-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; padding: 17px; border: 1px solid var(--line); border-left: 4px solid var(--subject-color, var(--blue)); border-radius: 11px; background: white; transition: border-color 0.2s, box-shadow 0.2s; }
+        .subject-item:hover { border-color: #bfdbfe; box-shadow: 0 5px 14px rgba(15, 31, 56, 0.06); }
+        .subject-info { min-width: 0; }
+        .subject-name { color: var(--navy); font-size: 0.96rem; font-weight: 800; overflow-wrap: anywhere; }
+        .subject-description { display: block; margin-top: 6px; color: var(--muted); font-size: 0.84rem; line-height: 1.5; overflow-wrap: anywhere; }
+        .subject-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 11px; }
+        .meta-pill { padding: 4px 8px; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: 0.72rem; font-weight: 700; }
+        .category-pill { background: color-mix(in srgb, var(--subject-color, var(--blue)) 10%, white); color: var(--subject-color, var(--blue)); }
+        .priority-high { background: #fef2f2; color: #b91c1c; }
+        .priority-medium { background: #fff7ed; color: #c2410c; }
+        .priority-low { background: #f0fdf4; color: #15803d; }
+        .task-list { margin: 10px 0 0; padding-left: 18px; color: #475569; font-size: 0.78rem; line-height: 1.6; }
+        .task-list li.completed { color: #15803d; text-decoration: line-through; }
+        .subject-metrics { display: grid; gap: 10px; margin-top: 14px; }
+        .metric-heading { display: flex; justify-content: space-between; gap: 10px; color: #475569; font-size: 0.74rem; font-weight: 700; }
+        .metric-heading strong { color: var(--navy); }
+        .metric-bar { display: block; width: 100%; height: 7px; margin-top: 5px; overflow: hidden; border: 0; border-radius: 99px; background: #e8eef5; accent-color: var(--subject-color, var(--blue)); }
+        .metric-bar::-webkit-progress-bar { border-radius: 99px; background: #e8eef5; }
+        .metric-bar::-webkit-progress-value { border-radius: 99px; background: var(--subject-color, var(--blue)); }
+        .metric-bar::-moz-progress-bar { border-radius: 99px; background: var(--subject-color, var(--blue)); }
+        .exam-indicator { display: block; margin-top: 12px; padding: 8px 10px; border-radius: 8px; background: #f8fafc; color: #475569; font-size: 0.74rem; font-weight: 700; }
+        .exam-soon { background: #fff7ed; color: #c2410c; }
+        .subject-actions { display: flex; flex: 0 0 auto; gap: 7px; }
+        .edit-link { background: #eff6ff; color: var(--blue); }
+        .edit-link:hover { background: #dbeafe; }
+        .delete-button { background: #fef2f2; color: var(--red); }
+        .delete-button:hover { background: #fee2e2; }
+        .empty { margin-top: 18px; padding: 22px; border: 1px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; color: var(--muted); text-align: center; }
+        @media (max-width: 900px) { .search-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 760px) { .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .subject-form button { grid-column: 1 / -1; } }
+        @media (max-width: 600px) { main { padding: 18px 0; } .hero { display: block; padding: 24px 20px; } .back-link { display: inline-block; margin-top: 18px; } .panel { padding: 18px; } .subject-form, .subject-list, .search-form { grid-template-columns: 1fr; } .subject-form button { grid-column: auto; } .subject-item { flex-direction: column; } }
+    </style>
+    {% include "study_app/includes/app_styles.html" %}
+</head>
+<body>
+    <main>
+        {% include "study_app/includes/back_button.html" with back_url="/dashboard/" %}
+        <header class="hero">
+            <div>
+                <p class="eyebrow">StudyMate module</p>
+                <h1>Subject Management</h1>
+                <p class="intro">Plan weekly goals, track learning activity, and keep important subject deadlines in view.</p>
+            </div>
+            <div class="hero-art"><img src="{% static 'study_app/images/study-books.svg' %}" alt="Illustration of colorful textbooks, a pencil, and a growing plant"></div>
+        </header>
+
+        <section class="panel" aria-labelledby="subjects-heading">
+            <div class="panel-heading">
+                <h2 id="subjects-heading">Your subjects</h2>
+                <span class="count">{{ subjects|length }} shown · {{ subject_count }} total</span>
+            </div>
+
+            <section class="summary-grid" aria-label="Subject analytics">
+                <article class="summary-card">
+                    <span class="summary-label">Subjects</span>
+                    <strong class="summary-value">{{ subject_count }}</strong>
+                    <span class="summary-help">Your learning areas</span>
+                </article>
+                <article class="summary-card">
+                    <span class="summary-label">Task completion</span>
+                    <strong class="summary-value">{{ completion_percent }}%</strong>
+                    <span class="summary-help">{{ completed_tasks }} of {{ total_tasks }} subject tasks</span>
+                </article>
+                <article class="summary-card">
+                    <span class="summary-label">Study time this week</span>
+                    <strong class="summary-value">{{ weekly_study_minutes }} min</strong>
+                    <span class="summary-help">Since {{ week_start|date:"M j" }}</span>
+                </article>
+                <article class="summary-card">
+                    <span class="summary-label">Tasks remaining</span>
+                    <strong class="summary-value">{{ pending_tasks_count }}</strong>
+                    <span class="summary-help">Across your subjects</span>
+                </article>
+            </section>
+
+            <form method="post" action="{% url 'add_subject' %}" class="subject-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% if form.errors %}<ul class="error-list">{% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}</ul>{% endif %}
+                <div class="field">
+                    <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                    {{ form.name }}
+                </div>
+                <div class="field">
+                    <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+                    {{ form.category }}
+                </div>
+                <div class="field">
+                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    {{ form.description }}
+                </div>
+                <div class="field">
+                    <label for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>
+                    {{ form.priority }}
+                </div>
+                <div class="field">
+                    <label for="{{ form.color.id_for_label }}">{{ form.color.label }}</label>
+                    {{ form.color }}
+                </div>
+                <div class="field">
+                    <label for="{{ form.study_hours.id_for_label }}">{{ form.study_hours.label }}</label>
+                    {{ form.study_hours }}
+                </div>
+                <div class="field">
+                    <label for="{{ form.weekly_goal_hours.id_for_label }}">{{ form.weekly_goal_hours.label }}</label>
+                    {{ form.weekly_goal_hours }}
+                    <span class="summary-help">{{ form.weekly_goal_hours.help_text }}</span>
+                </div>
+                <div class="field">
+                    <label for="{{ form.exam_date.id_for_label }}">{{ form.exam_date.label }}</label>
+                    {{ form.exam_date }}
+                </div>
+                <button type="submit" class="add-button">Add subject</button>
+            </form>
+
+            <form method="get" class="search-form" role="search">
+                <input type="search" name="q" value="{{ query }}" placeholder="Search subjects">
+                <select name="priority" aria-label="Filter by priority">
+                    <option value="">All priorities</option>
+                    {% for value, label in priorities %}
+                        <option value="{{ value }}" {% if selected_priority == value %}selected{% endif %}>{{ label }} priority</option>
+                    {% endfor %}
+                </select>
+                <select name="category" aria-label="Filter by category">
+                    <option value="">All categories</option>
+                    {% for option in categories %}
+                        <option value="{{ option }}" {% if selected_category == option %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="search-button">Search / filter</button>
+                {% if query or selected_priority or selected_category %}<a class="clear-link" href="{% url 'subject_management' %}">Clear</a>{% endif %}
+            </form>
+
+            {% if subjects %}
+                <ul class="subject-list">
+                    {% for subject in subjects %}
+                        <li class="subject-item" style="--subject-color: {{ subject.color }};">
+                            <div class="subject-info">
+                                <span class="subject-name">{{ subject.name }}</span>
+                                <span class="subject-description">{{ subject.description|default:"No description added yet." }}</span>
+                                <div class="subject-meta">
+                                    {% if subject.category %}<span class="meta-pill category-pill">{{ subject.category }}</span>{% endif %}
+                                    <span class="meta-pill priority-{{ subject.priority }}">{{ subject.get_priority_display }} priority</span>
+                                    <span class="meta-pill">{{ subject.study_hours }} recorded hours</span>
+                                </div>
+                                <div class="subject-metrics">
+                                    <div>
+                                        <div class="metric-heading">
+                                            <span>Task progress</span>
+                                            <strong>{{ subject.completed_tasks }}/{{ subject.total_tasks }} · {{ subject.progress_percent }}%</strong>
+                                        </div>
+                                        <progress class="metric-bar" max="100" value="{{ subject.progress_percent }}" aria-label="{{ subject.name }} task progress {{ subject.progress_percent }} percent">{{ subject.progress_percent }}%</progress>
+                                    </div>
+                                    <div>
+                                        <div class="metric-heading">
+                                            <span>Weekly study goal</span>
+                                            <strong>{% if subject.weekly_goal_hours %}{{ subject.week_study_hours|floatformat:"1" }} / {{ subject.weekly_goal_hours }} h · {{ subject.week_goal_percent }}%{% else %}{{ subject.week_study_minutes }} min · no goal set{% endif %}</strong>
+                                        </div>
+                                        {% if subject.weekly_goal_hours %}
+                                            <progress class="metric-bar" max="100" value="{{ subject.week_goal_percent }}" aria-label="{{ subject.name }} weekly study goal {{ subject.week_goal_percent }} percent">{{ subject.week_goal_percent }}%</progress>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <span class="exam-indicator {% if subject.next_exam_date and subject.days_until_exam <= 7 %}exam-soon{% endif %}">
+                                    {% if subject.next_exam_date %}
+                                        {% if subject.days_until_exam == 0 %}Exam today{% elif subject.days_until_exam == 1 %}Exam tomorrow{% else %}Exam in {{ subject.days_until_exam }} days{% endif %} · {{ subject.next_exam_date|date:"M j" }}
+                                    {% else %}
+                                        No upcoming exam scheduled
+                                    {% endif %}
+                                </span>
+                                {% if subject.tasks.all %}
+                                    <ul class="task-list">
+                                        {% for task in subject.tasks.all %}
+                                            <li class="{% if task.completed %}completed{% endif %}">{{ task.title }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                            <div class="subject-actions">
+                                <a href="{% url 'edit_subject' subject.pk %}" class="edit-link">Edit</a>
+                                <form method="post" action="{% url 'delete_subject' subject.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-button">Delete</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty">No subjects yet. Add your first subject above.</div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

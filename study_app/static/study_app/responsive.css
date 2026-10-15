@@ -1,0 +1,155 @@
+/* Shared layout safeguards for every StudyMate page. */
+html {
+    max-width: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    min-width: 0;
+    max-width: 100%;
+}
+
+main,
+section,
+article,
+aside,
+form,
+header,
+footer,
+nav {
+    min-width: 0;
+}
+
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+button,
+a {
+    touch-action: manipulation;
+}
+
+@media (max-width: 860px) {
+    .app-nav-links {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-inline: contain;
+        touch-action: pan-x;
+    }
+}
+
+@media (max-width: 760px) {
+    .auth-shell {
+        grid-template-columns: minmax(0, 1fr) !important;
+        width: min(100%, 540px) !important;
+        margin-inline: auto !important;
+    }
+
+    .auth-shell .brand-note {
+        display: none;
+    }
+
+    .page .topbar {
+        flex-wrap: wrap;
+    }
+
+    .page .nav-links {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 4px;
+    }
+
+    .page .footer-links {
+        flex-wrap: wrap;
+        row-gap: 10px;
+    }
+}
+
+@media (max-width: 560px) {
+    textarea,
+    input,
+    select,
+    button {
+        font-size: max(16px, 1em);
+    }
+
+    .login-card {
+        padding: 26px 20px !important;
+    }
+
+    .form-panel,
+    .brand-panel {
+        padding: 22px !important;
+    }
+
+    .wrap {
+        padding: 18px 12px !important;
+    }
+
+    .card {
+        padding: clamp(18px, 5vw, 26px) !important;
+    }
+
+    .panel,
+    .task-panel {
+        min-width: 0;
+    }
+
+    .subject-actions,
+    .actions {
+        flex-wrap: wrap;
+    }
+
+    .task-item,
+    .exam-list li,
+    .reminder-item {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .task-item form,
+    .exam-list form,
+    .reminder-item form {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    body {
+        overflow-wrap: anywhere;
+    }
+
+    .login-card,
+    .form-panel,
+    .brand-panel {
+        padding: 18px 16px !important;
+    }
+
+    .page .nav-links a,
+    .page .nav-links button {
+        padding: 7px 8px;
+        font-size: .76rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
